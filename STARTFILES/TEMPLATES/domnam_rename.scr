@@ -1,0 +1,10 @@
+#!/bin/bash
+export DOMNAM_old = EA31FES
+export DOMNAM_new = BLZE12
+
+for file in $DOMNAM_old_*.nc
+do
+echo "$file" "${file/EA31FES/BLZE12}"
+mv "$file" "${file/EA31FES/BLZE12}"
+done
+

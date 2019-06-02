@@ -1,0 +1,69 @@
+  <ns0:netcdf xmlns:ns0="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" title="NEMO aggregation">
+  <ns0:aggregation type="union">
+    <ns0:netcdf>
+      <ns0:aggregation dimName="time_counter" name="temperature" type="joinExisting">
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130130d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130204d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130209d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130214d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130219d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130224d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130301d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130306d05T.nc" />
+          <ns0:variable name="votemper" orgName="thetao" />
+      </ns0:aggregation>
+    </ns0:netcdf>
+    <ns0:netcdf>
+      <ns0:aggregation dimName="time_counter" name="salinity" type="joinExisting">
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130130d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130204d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130209d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130214d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130219d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130224d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130301d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130306d05T.nc" /> 
+          <ns0:variable name="vosaline" orgName="so" />
+      </ns0:aggregation>
+    </ns0:netcdf>
+    <ns0:netcdf>
+      <ns0:aggregation dimName="time_counter" name="zonal_velocity" type="joinExisting">
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130130d05U.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130204d05U.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130209d05U.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130214d05U.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130219d05U.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130224d05U.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130301d05U.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130306d05U.nc" />
+          <ns0:variable name="vozocrtx" orgName="uo" />
+      </ns0:aggregation>
+    </ns0:netcdf>
+    <ns0:netcdf>
+      <ns0:aggregation dimName="time_counter" name="meridian_velocity" type="joinExisting">
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130130d05V.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130204d05V.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130209d05V.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130214d05V.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130219d05V.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130224d05V.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130301d05V.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130306d05V.nc" />
+          <ns0:variable name="vomecrty" orgName="vo" />
+      </ns0:aggregation>
+    </ns0:netcdf>
+    <ns0:netcdf>
+      <ns0:aggregation dimName="time_counter" name="sea_surface_height" type="joinExisting">
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130130d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130204d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130209d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130214d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130219d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130224d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130301d05T.nc" />
+          <ns0:netcdf location="file:/projectsa/NEMO/gmaya/ORCA12/2013/ORCA0083-N06_20130306d05T.nc" />
+          <ns0:variable name="sossheig" orgName="zos" />
+      </ns0:aggregation>
+    </ns0:netcdf>
+  </ns0:aggregation>
+  </ns0:netcdf>

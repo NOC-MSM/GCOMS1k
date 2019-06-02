@@ -1,0 +1,17 @@
+#!/bin/bash
+for y in $(seq $1 $2)
+  do
+YEAR=$y
+export MNTH_START=01
+export MNTH_STOP=12
+
+cat $TEMPLATES/namelist.bdy_template  \
+| sed  "s,__YEAR__,$YEAR,g" \
+| sed  "s,__DOMNAM__,$DOMNAM,g"   \
+|sed   "s,__MNTH_START__,$MNTH_START,g" \
+|sed   "s,__MNTH_STOP__,$MNTH_STOP,g" \
+> namelist.bdy
+
+pynemo -s namelist.bdy
+
+done
