@@ -17,6 +17,8 @@ domain_path='/projectsa/accord/GCOMS1k/INPUTS/';
 %domain_outpath='/login/jholt/work/NEMO/GCOMS1k/OUTPUTS/';
 %domain_outpath='C:\Users\jholt\work\GCOMS1k\OUTPUTS\';
 domain_outpath='/projectsa/accord/GCOMS1k/OUTPUTS/';
+assess_path='/projectsa/accord/GCOMS1k/ASSESSMENT/';
+
 %parent_path='/projectsa/accord/ORCA0083/';
 parent_path='/projectsa/NEMO/gmaya/ORCA12/2013/';
 Re=6367456.0*pi/180;
