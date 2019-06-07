@@ -1,6 +1,12 @@
-%finds all EN4 profiles in a box x_min - x_max, y_min - y_max
-en4_path='/login/jholt/work/data_obs/EN4/';
-en4_name='EN.4.0.2.f.profiles.';
+%finds all EN4 profiles in a box 
+% Needs:
+% x_min, x_max, y_min, y_max  : box limits
+% assess_path : place ot write output
+% DOMNAM      : name of region
+
+
+en4_path='/login/jholt/work/data_obs/EN4.2.1/';
+en4_name='EN.4.2.1.f.profiles.l09.'
 
 lon_en4=[];
 lat_en4=[];
@@ -11,7 +17,7 @@ yday_en4=[];
 jday_en4=[];
 mnth_en4=[];
 year_en4=[];
-for iy=1977:2014;
+for iy=1977:2018;
     for im=1:12
     disp([iy im])
     mm=num2str(im);if im<10; mm=['0' mm];end

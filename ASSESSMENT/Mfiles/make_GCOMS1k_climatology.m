@@ -23,7 +23,7 @@ ll(1)=1;
 
 im=1:12;
 yearstart=1995;
-yearstop=1995;
+yearstop=2005;
 nyear = yearstop-yearstart+1;
 for iv=[1 3];
  eval([varname{iv} '=zeros(nx,ny,12); ' ]);
@@ -41,6 +41,10 @@ for im=1:12
     if ll(iv)==1;
     eval(['VV=squeeze(mean(' nemoname{iv} '(:,:,ll(iv),:),4));']);
     VV(D_dom==0)=NaN;
+    VV(1,:)=NaN;
+    VV(:,1)=NaN;
+    VV(nx,:)=NaN;
+    VV(:,ny)=NaN;
     eval([varname{iv} '(:,:,im) =' varname{iv} '(:,:,im)+VV ;']);
     end
     end
@@ -54,4 +58,11 @@ for im=1:12
  eval([varname{iv} '(:,:,im) =' varname{iv} ' (:,:,im)/nyear;';])
     end
 end
+
+nemo_name=[assess_path 'TSclim_' DOMNAM '.mat'];
+save(nemo_name, 'sst','sss');
+
+
+
+
 

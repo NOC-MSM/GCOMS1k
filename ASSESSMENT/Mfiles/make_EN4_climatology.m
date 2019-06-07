@@ -1,5 +1,20 @@
-dZ=50; %30m
-domain_grid
+%Bins EN4 data on to model grid ot make monthly climatatology
+% Calculates
+% sst_en4  : sea surface temperature
+% sbt_en4  : sea bed temperature
+% sss_en4  : sea surface salinity
+% sbs_en4  : sea bed salinity
+
+% Needs
+% assess_path : place to read data and write output
+% DOMNAM      : name of region
+% nx, ny size of model grid
+% lon_dom(nx,ny) lat_dom(ny,ny) model grid coordiates (degs)
+% dx_dom(nx,ny)  dy_dom(nx,ny)  modle grid spacing (m)
+
+Re=6367456.0*pi/180; % radius of Earth
+dZ=20; %30m
+
 en4_dataname=[assess_path 'EN4_profiles_' DOMNAM '.mat'];
 
 load (en4_dataname)
@@ -27,7 +42,6 @@ for i=1:nx;
             for ii=1:length(I);
                Is=find(Z_en4(:,I(ii))<dZ) ;
                Ib=find(D_dom(i,j)-Z_en4(:,I(ii))<dZ) ;
-
              %SST  
              Ts=nanmean(tmp_en4(Is,I(ii)));
              if isfinite(Ts);
@@ -50,11 +64,10 @@ for i=1:nx;
              %SBS
              Sb=nanmean(sal_en4(Ib,I(ii)));
              if isfinite(Sb);
-               disp([i,j,Sb])
                  sbs_en4(i,j,im)= sbs_en4(i,j,im) + Sb;
                  nsbs_en4(i,j,im)= nsbs_en4(i,j,im) + 1;
              end
-         
+ %Add other parameters here        
              
             end    
             end
@@ -64,9 +77,17 @@ for i=1:nx;
     end
 end
 
+sst_en4=sst_en4./nsst_en4;
+sbt_en4=sbt_en4./nsbt_en4;
+sss_en4=sss_en4./nsss_en4;
+sbs_en4=sbs_en4./nsbs_en4;
 
 sst_en4(nsst_en4==0)=NaN;
 sss_en4(nsss_en4==0)=NaN;
+
+en4_name=[assess_path 'EN4clim_' DOMNAM '.mat'];
+save(en4_name, 'sst_en4','sss_en4', 'sbt_en4','sbs_en4');
+
 
 
 
