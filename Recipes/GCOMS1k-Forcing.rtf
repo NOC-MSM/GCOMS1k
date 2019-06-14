@@ -17,6 +17,12 @@ export CDIR_ARCH=/work/n01/n01/$USER/$CONFIG/trunk_NEMOGCM_r8395/CONFIG\par
 export TEMPLATES=$INPUTS/TEMPLATES\par
 
 \pard\f0\lang2057 export ORCA0083=$WDIR/DATA_SOURCES/ORCA0083\par
+\par
+
+\pard\widctlpar\sl252\slmult1\f1\lang1033 exec ssh-agent $SHELL \par
+ ssh-add ~/.ssh/id_rsa\par
+
+\pard\f0\lang2057\par
 ---------------------------------------------------------------------------------------------------------------\par
 \b Tides\b0\par
 
@@ -84,7 +90,9 @@ ssh-add ~/.ssh/id_rsa_jasmin\par
 sshfs jholt@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol1/ORCA0083-N006/means/ /work/jholt/JASMIN/NEMO-ORCA0083-N006/  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
 sshfs jholt@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol2/ORCA0083-N006/medusa/ /work/jholt/JASMIN/NEMO-ORCA0083-N006-2013_2015/  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
 
-\pard\f0 #fusermount -u \f1 /work/jholt/JASMIN/NEMO-ORCA0083-N006/  \f0\par
+\pard\f0 fusermount -u \f1 /work/jholt/JASMIN/NEMO-ORCA0083-N006/  \par
+\f0 fusermount -u \f1 /work/jholt/JASMIN/NEMO-ORCA0083-N006-2013_2015/  \par
+\f0\par
 ------------------------------------------------------------------\par
 Get correct pynemo version\par
 
@@ -105,24 +113,12 @@ export PYTHONPATH=/login/$USER/.conda/envs/new_env/lib/python2.7/site-packages/:
 python setup.py install --prefix ~/.conda/envs/new_env\par
 #fix 5-day mean check if still needed\par
 -------------------------------------------------------------------------\par
-cd $INPUTS/$DOMNAM\lang2057\par
+cd $INP\f0\lang2057 UTS/$DOMNAM\par
 
-\pard\f0\par
-
-\pard\widctlpar\sl252\slmult1\f1\lang1033 ln -s $DOMNAM\\_bathy_meter.nc bathy_meter.nc \par
-ln -s $DOMNAM\\_domain_cfg.nc domain_cfg.nc \par
-ln -s $ORCA0083/mesh_hgr.nc  .\par
-ln -s $ORCA0083/mesh_zgr_renamed.nc  .\par
-ln -s $ORCA0083/mask.nc  .\par
-
-\pard\f0\lang2057 cp \f1\lang1033 $TEMPLATES/local_inputs_feb.ncml  .\par
-\f0\lang2057 cp \f1\lang1033 $TEMPLATES/inputs_dst.ncml .\f0\lang2057\par
-\par
-------\par
-for individual months to 1 year\par
-export YEAR=1996\par
-export MNTH_START=12\par
-export MNTH_STOP=12\par
+\pard for individual months to 1 year\par
+export YEAR=2013\par
+export MNTH_START=08\par
+export MNTH_STOP=08\par
 \par
 cat $TEMPLATES/namelist.bdy_template  \\\par
 | sed  "s,__YEAR__,$YEAR,g" \\\par
