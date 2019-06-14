@@ -135,4 +135,16 @@ title([DOMNAM ' : Bathymetry']);
 
 %%
 make_nemo_V34_coords
-eval(['!echo "' DOMNAM '" >> ' [ domain_path 'Domain_list' ]  ]) 
+xmin=nanmin(glamt(:));
+xmax=nanmax(glamt(:));
+ymin=nanmin(gphit(:));
+ymax=nanmax(gphit(:));
+
+DOMSTR=[ DOMNAM '; xmin=' num2str(xmin,3) '; xmax=' num2str(xmax,3)  '; ymin=' num2str(ymin,3) '; ymax=' num2str(xmax,3)]
+
+eval(['!echo "' DOMSTR '" >> ' [ domain_path 'Domain_list' ]  ])
+
+
+
+
+ 
