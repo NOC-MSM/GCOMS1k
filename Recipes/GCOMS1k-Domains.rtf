@@ -4,11 +4,13 @@
 Grid Generation\par
 \b0 produces: Bathy domain.cfg\par
 list of domains, lat and lon limits\par
+\f1\lang1033  <DOMNAM> = e.g. BLZE12 \par
+Replace all in this doc for cut-and-paste\f0\lang2057\par
+-----------------------------------------------------------------------------------------------------------------------------------\par
+-----------------------------------------------------------------------------------------------------------------------------------\par
+\b Window 1: livljobs6\b0\par
 \par
---------------------------------------------------\par
-Window 1: livljobs5\par
-\par
-\f1\lang1033 export DOMNAM=BLZE12\f0\lang2057\par
+\f1\lang1033 export DOMNAM=<DOMNAM>\f0\lang2057\par
 
 \pard\widctlpar\sl252\slmult1\f1\lang1033 export CONFIG=GCOMS1k\par
 export WDIR=/projectsa/accord/$CONFIG\par
@@ -17,8 +19,15 @@ export WDIR=/projectsa/accord/$CONFIG\par
 export  OUTPUTS=$WDIR/OUTPUTS\par
 export INPUTS_ARCH=/work/n01/n01/$USER/$CONFIG/INPUTS/\par
 export CDIR_ARCH=/work/n01/n01/$USER/$CONFIG/trunk_NEMOGCM_r8395/CONFIG\par
-\par
-In matlab\par
+\f0\lang2057 -----------------------------------------------------------------------------------------------------------------------------------\f1\lang1033\par
+
+\pard\widctlpar\sl252\slmult1 exec ssh-agent $SHELL \par
+ssh-add ~/.ssh/id_rsa\par
+
+\pard\f0\lang2057 -----------------------------------------------------------------------------------------------------------------------------------\par
+
+\pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1\f1\lang1033  module load  matlab/2016b ; matlab &\par
+\b In matlab:\b0\par
 \par
 cd /work/jholt/Git/GCOMS1k/STARTFILES/Generate_Domains/Mfiles\par
 
@@ -26,22 +35,29 @@ cd /work/jholt/Git/GCOMS1k/STARTFILES/Generate_Domains/Mfiles\par
 edit \f1\lang1033 extract_LMEs_guide.m: define iwant_LMEs\f0\lang2057\par
 \par
 \f1\lang1033 extract_LMEs_guide\par
-Indentifier = BLZE12   <DOMNAM>\par
-Run GridBuilder for : BLZE12\par
-\f0\lang2057 load bathy from /projectsa/accord/GCOMS1k/LME/LME_Bathy\par
+Indentifier = <DOMNAM>  \par
+Extracts gebco bathymetry if needed \par
+\par
+Run GridBuilder for : <DOMNAM>\par
+\f0\lang2057 load bathy from /projectsa/accord/GCOMS1k/LME/LME_Bathy/LME_12_GEBCO_bathy.nc \par
 mask setting Use GSHHG\par
 
 \pard\nowidctlpar\f1 Adjust area, rotation and number of cells to target resolution\par
 Start box at bottom left\f0\par
 
-\pard load/save grid file to /work/jholt/Projects/ACCORD/NEMO_Grid/Grid_files/\f1\lang1033 BLZE12_Grid.mat\f0\lang2057\par
+\pard load/save grid file to /projectsa/accord/GCOMS1k/Grid_files/\f1\lang1033 <DOMNAM>_Grid.mat\f0\lang2057\par
 \par
 exit grid builder\par
-DOMNAM='BLZE12'\par
+DOMNAM='<DOMNAM>'\par
 \par
 run GridBuilder_to_NEMO\par
+\par
 Produces:\par
-BLZE12_bathy_meter.nc  BLZE12_coordinates.nc\par
+<DOMNAM>_bathy_meter.nc  <DOMNAM>_coordinates.nc\par
+-----------------------------------------------------------------------------------------------------------------------------------\par
+-----------------------------------------------------------------------------------------------------------------------------------\par
+\par
+\b On Livljobs6\b0\par
 ssh jholt@login.archer.ac.uk mkdir $\f1\lang1033 INPUTS_ARCH/$DOMNAM\par
 cd $INPUTS/$DOMNAM\f0\lang2057\par
 scp $DOMNAM\\_bathy_meter.nc $DOMNAM\\_coordinates.nc jholt@login.archer.ac.uk:$\f1\lang1033 INPUTS_ARCH/$DOMNAM\f0\lang2057\par
@@ -49,8 +65,8 @@ scp $DOMNAM\\_bathy_meter.nc $DOMNAM\\_coordinates.nc jholt@login.archer.ac.uk:$
 Generate domain_cfg on ARCHER (below)\par
 \par
 \f1\lang1033 rsync  -uvt   login.archer.ac.uk:$INPUTS_ARCH/$DOMNAM/*.nc $INPUTS/$DOMNAM/\f0\lang2057\par
-\par
-------------------------------------------------------------------------------------\par
+-----------------------------------------------------------------------------------------------------------------------------------\par
+-----------------------------------------------------------------------------------------------------------------------------------\par
 \b Window 2 on ARCHER\b0\par
 
 \pard\widctlpar\sl252\slmult1\f1\lang1033\par
@@ -62,7 +78,7 @@ export TEMPLATES=$INPUTS/TEMPLATES\par
 export CDIR=$WDIR//trunk_NEMOGCM_r8395/CONFIG\par
 
 \pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 export TDIR=$WDIR//trunk_NEMOGCM_r8395/TOOLS\par
-export DOMNAM=BLZE12\par
+export DOMNAM=<DOMNAM>\par
 
 \pard\f0\lang2057\par
 cd $INPUTS/$DOMNAM\par
@@ -87,11 +103,11 @@ qsub -q short rs\par
 
 \pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1\f1\lang1033 rm domain_cfg.[oe]* *.xml rs\lang2057  \lang1033 namelist_ref coordinates.nc bathy_meter.nc\lang2057  \lang1033 make_domain_cfg.exe layout.dat output.namelist.dyn stdouterr_cfg make_domain_cfg.exe rs\lang2057  \lang1033 ocean.output\par
 
-\pard\f0\lang2057\par
-------------------------------------------------------------------------------------\par
+\pard\f0\lang2057 -----------------------------------------------------------------------------------------------------------------------------------\par
+Use LME's to number domains\par
 \par
 \lang9{\pict{\*\picprop{\sp{\sn wzDescription}{\sv Image}}{\sp{\sn posv}{\sv 1}}
-}\pngblip\picw9753\pich9469\picwgoal5529\pichgoal5368 
+}\pngblip\picw14420\pich14049\picwgoal8175\pichgoal7965 
 89504e470d0a1a0a0000000d4948445200000399000002c50802000000c60fb049000000017352
 474200aece1ce90000000467414d410000b18f0bfc610500000009704859730000189700001892
 01ef75f8a60000ffa549444154785eec5d05601447db3ef7cb5ddc9d187125c121b8b7b4c55a68
