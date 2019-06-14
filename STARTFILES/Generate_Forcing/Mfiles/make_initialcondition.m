@@ -26,7 +26,8 @@ vosaline0=vosaline; %this is not used
 votemper0=votemper;
 %%
 vosaline1=vosaline;
-votemper1=votemper;for i_it=1:n_it %number of cells to flood 
+votemper1=votemper;
+for i_it=1:n_it %number of cells to flood 
 ir=2:nxp-1;
 jr=2:nyp-1;
 for k=1:nzp;   
@@ -145,8 +146,8 @@ sal_dom_pz=sal_dom_pz+V{iw}.*W{iw};
 end
 
 %% check statically stable - should use better EOS here
-rho=equstate(tmp_dom_pz,sal_dom_pz,9.81);
-drhodz=diff(rho,3);
+%rho=equstate(tmp_dom_pz,sal_dom_pz,9.81);
+%drhodz=diff(rho,3);
 
 
 

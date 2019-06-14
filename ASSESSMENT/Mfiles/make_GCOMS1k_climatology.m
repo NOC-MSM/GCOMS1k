@@ -30,11 +30,11 @@ for iv=[1 3];
 end
 for iy=yearstart:yearstop;
     disp(iy)
-    YEAR=num2str(iy);
+
 outpath=[   domain_outpath '/' DOMNAM '_' EXPNUM  '/']; 
 for im=1:12
     disp(im)
-    MNTH=num2str(im);
+
     read_field
     
     for iv=[1 3];

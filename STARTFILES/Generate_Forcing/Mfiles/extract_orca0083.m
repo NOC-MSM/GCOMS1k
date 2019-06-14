@@ -83,7 +83,7 @@ lon_prntex=lon_parent(i,j);
 lat_prntex=lat_parent(i,j);
 gdept_prntex=double(ncread(name_parent,'deptht'));
 nzp=length(gdept_prntex);
-if thredds
+if str2num(Year)<2013
 tmpvname='potemp';
 salvname='salin';
 else

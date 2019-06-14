@@ -7,7 +7,9 @@ if im==2; mdays =28; end
 if im==2 & isleap ; mdays=29;;end
 
 
-MDAYS=num2str(mdays);
+MDAYS=num2str(mdays);  
+    YEAR=num2str(iy);
+MNTH=num2str(im);
 if im<10; MNTH=['0' MNTH];end
     
 
