@@ -41,8 +41,9 @@ for idom=1:id;
   GridBuilder
   pause
  % DOMNAM=['GCOMS1k_LME_' num2str(S1(ii).LME_NUMBER) '_' dom{idom}];flipit=0;
-  DOMNAM=[dom{idom} num2str(S1(ii).LME_NUMBER) '_1k'];
-  GridBuilder_to_NEMO;
+%  DOMNAM=[dom{idom} num2str(S1(ii).LME_NUMBER) '_1k'];
+DOMNAM=dom{idom};
+GridBuilder_to_NEMO;
 
   end
   
