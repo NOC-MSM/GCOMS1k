@@ -19,6 +19,7 @@ assess_path='/projectsa/accord/GCOMS1k/ASSESSMENT/';
 %domain_path='C:\Users\jholt\work\GCOMS1k\INPUTS\';
 %domain_outpath='C:\Users\jholt\work\GCOMS1k\OUTPUTS\';
 
-parent_path='/projectsa/NEMO/gmaya/ORCA12/2013/';
+parent_path_coords='/projectsa/NEMO/gmaya/ORCA12/2013/';
+parent_path='/work/jholt/JASMIN/NEMO-ORCA0083-N006/';
 Re=6367456.0*pi/180;
 tiny=1e-6;

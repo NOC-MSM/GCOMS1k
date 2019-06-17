@@ -1,6 +1,6 @@
 grid_path=[projects_path '/Grid_files/'];
 grid_name='';
-flipit=1;
+flipit=0;
 %DOMNAM='GCOMS1k_LME_12_BLZE';
 grid_name=[DOMNAM '_Grid.mat'];
 
@@ -140,7 +140,7 @@ xmax=nanmax(glamt(:));
 ymin=nanmin(gphit(:));
 ymax=nanmax(gphit(:));
 
-DOMSTR=[ DOMNAM '; xmin=' num2str(xmin,3) '; xmax=' num2str(xmax,3)  '; ymin=' num2str(ymin,3) '; ymax=' num2str(xmax,3)]
+DOMSTR=['DOMNAM=' DOMNAM '; xmin=' num2str(xmin,3) '; xmax=' num2str(xmax,3)  '; ymin=' num2str(ymin,3) '; ymax=' num2str(xmax,3)]
 
 eval(['!echo "' DOMSTR '" >> ' [ domain_path 'Domain_list' ]  ])
 

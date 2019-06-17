@@ -1,12 +1,13 @@
 %set up environment
 environment
-DOMNAM='BLZE12';
+DOMNAM='GTHI35';
 addpath(genpath('/login/jdha/matlab/new_matlab/utilities/ann_mwrapper'))
 %Extract pararent grid and T & S data
 Year='1995';
 date='19950105d05';
-thredds=1;
-extract_orca0083
+thredds=0;
+parentUV=0;
+%extract_orca0083
 %% Flood fill land
 
 n_it=5; %number of iterations;

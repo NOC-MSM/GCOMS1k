@@ -25,9 +25,9 @@ name_parent='/projectsa/NEMO/gmaya/ORCA12/mesh_hgr.nc';
 lon_parent=double(ncread(name_parent,'nav_lon'));
 lat_parent=double(ncread(name_parent,'nav_lat'));
 if ~thredds
-name_parent=[parent_path fname_parent];
-name_parentU=[parent_path fname_parentU];
-name_parentV=[parent_path fname_parentV];
+name_parent=[parent_path '/' Year '/' fname_parent];
+name_parentU=[parent_path '/' Year '/' fname_parentU];
+name_parentV=[parent_path '/' Year '/' fname_parentV];
 else
 %parent_dataset='http://opendap4gws.jasmin.ac.uk/thredds/nemo/dodsC/nemo_clim_agg/ORCA0083-N06_grid_';
 parent_datasetT=['http://opendap4gws.jasmin.ac.uk/thredds/nemo/dodsC/grid_T/' Year '/ORCA0083-N06_' date]
@@ -114,10 +114,10 @@ end
 ss=size(votemper);
 nxp=ss(1);nyp=ss(2);
 
-mbox_prntex=zeros(nxp,nyp);
+mbot_prntex=zeros(nxp,nyp);
 for i=1:nxp;
     for j=1:nyp;
-     if vosaline(i,j,1) ~=0;
+     if vosaline(i,j,1) ~=0 & isfinite(vosaline(i,j,1) )
     mbot_prntex(i,j)=find(vosaline(i,j,:)>0,1,'last');
     end
     end
