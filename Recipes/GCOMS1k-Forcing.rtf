@@ -1,10 +1,13 @@
 {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang2057{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fswiss\fprq2\fcharset0 Calibri;}{\f2\fnil\fcharset0 Courier New;}}
 {\*\generator Riched20 10.0.17134}\viewkind4\uc1 
-\pard\b\f0\fs22 GCOMS2 Forcing Generation\b0\par
+\pard\b\f0\fs22 GCOMS2 Forcing Generation\par
+\b0\f1\lang1033  <DOMNAM> = e.g. BLZE12 \par
+Replace all in this doc for cut-and-paste\f0\lang2057\par
+\par
 ---------------------------------------------------------------------------------------------------------------\par
 Window 1: livljobs6\par
 \par
-\f1\lang1033 export DOMNAM=BLZE12\f0\lang2057\par
+\f1\lang1033 export DOMNAM=<DOMNAM>\f0\lang2057\par
 
 \pard\widctlpar\sl252\slmult1\f1\lang1033 export CONFIG=GCOMS1k\par
 export WORK=/work/\par
@@ -60,7 +63,7 @@ rsync  -uvt   $INPUTS/$DOMNAM/bdydta/FES_Tides/*.nc  login.archer.ac.uk:$INPUTS_
 \pard\f0\lang2057\par
 ---------------------------------------------------------------------------------------------------------------\par
 ---------------------------------------------------------------------------------------------------------------\par
-\b Initial Conditions\par
+\b Initial Conditions (can do while tides are running)\par
 Livljobs\par
 \b0 module load  matlab/2016b ; matlab &\par
 ----------------------------------------------------------------\par
@@ -72,9 +75,9 @@ addpath('/work/jholt/Git/GCOMS1k/STARTFILES/Generate_Domains/Mfiles/');\f0\lang2
 \pard environment\par
 
 \pard\widctlpar\sl252\slmult1\f1\lang1033 Edit and run \par
-make_initialcondition\par
+edit make_initialcondition\par
 -----------------------------------------------------------------\par
-DOMNAM=BLZE12\par
+DOMNAM=<DOMNAM>\par
 
 \pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 rsync  -uvt   $INPUTS/$DOMNAM/$DOMNAM*IC*.nc  login.archer.ac.uk:$INPUTS_ARCH/$DOMNAM\par
 
@@ -114,11 +117,12 @@ python setup.py install --prefix ~/.conda/envs/new_env\par
 #fix 5-day mean check if still needed\par
 -------------------------------------------------------------------------\par
 cd $INP\f0\lang2057 UTS/$DOMNAM\par
+\par
 
 \pard for individual months to 1 year\par
-export YEAR=2013\par
-export MNTH_START=08\par
-export MNTH_STOP=08\par
+export YEAR=1995\par
+export MNTH_START=01\par
+export MNTH_STOP=12\par
 \par
 cat $TEMPLATES/namelist.bdy_template  \\\par
 | sed  "s,__YEAR__,$YEAR,g" \\\par
@@ -176,7 +180,7 @@ export TEMPLATES=$INPUTS/TEMPLATES\par
 export CDIR=$WDIR//trunk_NEMOGCM_r8395/CONFIG\par
 
 \pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 export TDIR=$WDIR//trunk_NEMOGCM_r8395/TOOLS\par
-export DOMNAM=BLZE12\par
+export DOMNAM=<DOMNAM>\par
 
 \pard\f0\lang2057 export  YEARSTART=1995\par
 \par
