@@ -1,0 +1,14 @@
+#!/bin/bash
+for y in $(seq $1 $2)
+  do 
+  if (( $y <= 2011 )); then
+    sed -e  "s/YYYY/$y/g" ./ncml_templates/ncml_template_pre2012 > NCML/ORCA0083_N06_$y.ncml
+  elif (( $y > 2013 )); then
+    sed -e  "s/YYYY/$y/g" ./ncml_templates/ncml_template_post2013 > NCML/ORCA0083_N06_$y.ncml
+  elif (( $y == 2012 )); then
+    sed -e  "s/YYYY/$y/g" ./ncml_templates/ncml_template_2012 > NCML/ORCA0083_N06_$y.ncml
+  elif (( $y == 2013 )); then
+    sed -e  "s/YYYY/$y/g" ./ncml_templates/ncml_template_2013 > NCML/ORCA0083_N06_$y.ncml
+  fi
+  echo $y
+done

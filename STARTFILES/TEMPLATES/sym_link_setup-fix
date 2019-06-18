@@ -1,0 +1,64 @@
+#!/bin/bash
+PATH_TO_SYML=/work/jholt/JASMIN/NEMO-ORCA0083-N006-sym/
+PATH_TO_NEMO1=/work/jholt/JASMIN/NEMO-ORCA0083-N006/
+PATH_TO_NEMO2=/work/jholt/JASMIN/NEMO-ORCA0083-N006-2013_2015/
+PATH_TO_NEMO3=/work/jholt/JASMIN/ORCA0083-N006-fix-2013/
+mkdir $PATH_TO_SYML
+for y in $(seq $1 $2)
+  do 
+  if (($y < 2013)); then
+  PATH_TO_NEMO=$PATH_TO_NEMO1
+  else 
+  PATH_TO_NEMO=$PATH_TO_NEMO2
+  fi
+
+  cd $PATH_TO_NEMO/$y
+  mkdir $PATH_TO_SYML/$y
+  for g in T U V I W
+    do
+    for fn in *d05$g.nc
+      do
+      ln -s $PATH_TO_NEMO/$y/$fn $PATH_TO_SYML/$y/$fn
+    done
+  done
+
+   if (($y == 2013)); then
+   rm  $PATH_TO_SYML/2013/ORCA0083-N06_20130902d05U.nc 
+   rm  $PATH_TO_SYML/2013/ORCA0083-N06_20130907d05U.nc  
+   rm  $PATH_TO_SYML/2013/ORCA0083-N06_20130912d05U.nc
+   rm  $PATH_TO_SYML/2013/ORCA0083-N06_20130902d05V.nc         
+   rm  $PATH_TO_SYML/2013/ORCA0083-N06_20130907d05V.nc  
+   rm  $PATH_TO_SYML/2013/ORCA0083-N06_20130912d05V.nc  
+  
+   ln -s $PATH_TO_NEMO3/2013/ORCA0083-N06_20130902d05U.nc  $PATH_TO_SYML/2013/ORCA0083-N06_20130902d05U.nc
+   ln -s $PATH_TO_NEMO3/2013/ORCA0083-N06_20130907d05U.nc  $PATH_TO_SYML/2013/ORCA0083-N06_20130907d05U.nc
+   ln -s $PATH_TO_NEMO3/2013/ORCA0083-N06_20130912d05U.nc  $PATH_TO_SYML/2013/ORCA0083-N06_20130912d05U.nc
+   ln -s $PATH_TO_NEMO3/2013/ORCA0083-N06_20130902d05V.nc  $PATH_TO_SYML/2013/ORCA0083-N06_20130902d05V.nc
+   ln -s $PATH_TO_NEMO3/2013/ORCA0083-N06_20130907d05V.nc  $PATH_TO_SYML/2013/ORCA0083-N06_20130907d05V.nc
+   ln -s $PATH_TO_NEMO3/2013/ORCA0083-N06_20130912d05V.nc  $PATH_TO_SYML/2013/ORCA0083-N06_20130912d05V.nc
+
+   fi
+
+  echo $y
+done
+
+for y in $(seq $1 $2)
+  do 
+  cd $PATH_TO_SYML/$y
+  ym1=`expr $y - 1`
+  yp1=`expr $y + 1`
+  for g in T U V I W
+    do
+    if [ -e $PATH_TO_NEMO/$ym1/ORCA0083-N06_$ym1\1231d05$g.nc ]; then
+      ln -s ../$ym1/ORCA0083-N06_$ym1\1231d05$g.nc ORCA0083-N06_$ym1\1231d05$g.nc
+    else
+      ln -s ../$ym1/ORCA0083-N06_$ym1\1230d05$g.nc ORCA0083-N06_$ym1\1230d05$g.nc
+    fi
+    if [ -e $PATH_TO_NEMO/$yp1/ORCA0083-N06_$yp1\0105d05$g.nc ]; then
+    ln -s ../$yp1/ORCA0083-N06_$yp1\0105d05$g.nc ORCA0083-N06_$yp1\0105d05$g.nc
+    else
+    ln -s ../$y/ORCA0083-N06_$y\1231d05$g.nc ORCA0083-N06_$yp1\0105d05$g.nc
+    fi
+  done
+  echo $y
+done
