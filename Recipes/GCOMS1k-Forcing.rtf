@@ -5,12 +5,12 @@
 Replace all in this doc for cut-and-paste\f0\lang2057\par
 \par
 ---------------------------------------------------------------------------------------------------------------\par
-Window 1: livljobs6\par
+\b Window 1: livljobs6\b0\par
 \par
 \f1\lang1033 export DOMNAM=<DOMNAM>\f0\lang2057\par
 
 \pard\widctlpar\sl252\slmult1\f1\lang1033 export CONFIG=GCOMS1k\par
-export WORK=/work/\par
+export WORK=/work/$USER/\par
 export WDIR=/projectsa/accord/$CONFIG\par
 
 \pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 export INPUTS=$WDIR/INPUTS\par
@@ -18,15 +18,20 @@ export  OUTPUTS=$WDIR/OUTPUTS\par
 export INPUTS_ARCH=/work/n01/n01/$USER/$CONFIG/INPUTS/\par
 export CDIR_ARCH=/work/n01/n01/$USER/$CONFIG/trunk_NEMOGCM_r8395/CONFIG\par
 export TEMPLATES=$INPUTS/TEMPLATES\par
+\lang2057 export GitTEMPLATES=$WORK/Git/GCOMS1k/STARTFILES/TEMPLATES/\lang1033\par
 
 \pard\f0\lang2057 export ORCA0083=$WDIR/DATA_SOURCES/ORCA0083\par
+
+\pard\widctlpar\sl252\slmult1\f1 export JASMINDIR=$WORK/JASMIN/\par
+
+\pard\f0\par
+ln -s $\f1 GitTEMPLATES $TEMPLATES\f0\par
 \par
 
 \pard\widctlpar\sl252\slmult1\f1\lang1033 exec ssh-agent $SHELL \par
- ssh-add ~/.ssh/id_rsa\par
+ssh-add ~/.ssh/id_rsa\f0\lang2057\par
 
-\pard\f0\lang2057\par
----------------------------------------------------------------------------------------------------------------\par
+\pard ---------------------------------------------------------------------------------------------------------------\par
 \b Tides\b0\par
 
 \pard\widctlpar\sl252\slmult1\f1\lang1033 cd $WORK/$USER/nrct/Python\par
@@ -84,17 +89,24 @@ DOMNAM=<DOMNAM>\par
 \pard\b\f0\lang2057\par
 \b0 ---------------------------------------------------------------------------------------------------------------\b\par
 3D baroclinic: Livljobs6\par
------------------------------------------------------------------\b0\par
+\b0 ------------------------------------------------------------------\par
 \b Access ORCA0083 data\par
 \b0 sshfs on LIVLJOBS6 (requires NOCL to add to fuse group)\b\par
 
 \pard\widctlpar\sl252\slmult1\b0\f1 exec ssh-agent $SHELL\par
 ssh-add ~/.ssh/id_rsa_jasmin\par
-sshfs jholt@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol1/ORCA0083-N006/means/ /work/jholt/JASMIN/NEMO-ORCA0083-N006/  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
-sshfs jholt@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol2/ORCA0083-N006/medusa/ /work/jholt/JASMIN/NEMO-ORCA0083-N006-2013_2015/  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
 
-\pard\f0 fusermount -u \f1 /work/jholt/JASMIN/NEMO-ORCA0083-N006/  \par
-\f0 fusermount -u \f1 /work/jholt/JASMIN/NEMO-ORCA0083-N006-2013_2015/  \par
+\pard\f0\par
+
+\pard\widctlpar\sl252\slmult1\f1 sshfs $USER@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol1/ORCA0083-N006/means/   $JASMINDIR/NEMO-ORCA0083-N006/  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
+sshfs $USER@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol2/ORCA0083-N006/medusa/ $JASMINDIR/NEMO-ORCA0083-N006-2013_2015/  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
+sshfs $USER@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol5/jdha/ORCA0083-N006-fix/means/ $JASMINDIR/NEMO-ORCA0083-N006-fix-2013  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
+
+\pard\f0\par
+#To unmount:\par
+fusermount -u \f1 $JASMINDIR/NEMO-ORCA0083-N006/  \par
+\f0 fusermount -u \f1 $JASMINDIR/NEMO-ORCA0083-N006-2013_2015/  \par
+\f0 fusermount -u \f1 $JASMINDIR/NEMO-ORCA0083-N006-fix-2013/\par
 \f0\par
 ------------------------------------------------------------------\par
 Get correct pynemo version\par
@@ -145,10 +157,10 @@ mv bdydta/coordinates.bdy.nc bdydta/$DOMNAM\\_coordinates.bdy.nc \par
 
 \pard\f0 export  YEARSTART=1995\par
 export YEARSTOP=1995\par
-export  LONMIN=-90\par
-export  LONMAX=-85\par
-export  LATMIN=15\par
-export  LATMAX=20\par
+export  LONMIN=98\par
+export  LONMAX=109\par
+export  LATMIN=5\par
+export  LATMAX=13.7\par
 \b\par
 \b0 cat $TEMPLATES/OFFICIAL_Generate_NEMO_Forcing_NEWERA.py_template  \\\par
 | sed  "s,__YEARSTART__,$YEARSTART,g" \\\par
@@ -183,7 +195,6 @@ export CDIR=$WDIR//trunk_NEMOGCM_r8395/CONFIG\par
 export DOMNAM=<DOMNAM>\par
 
 \pard\f0\lang2057 export  YEARSTART=1995\par
-\par
 \par
 cd $INPUTS/$DOMNAM\par
 -----------------------------------------------------------------\par
