@@ -28,7 +28,7 @@
         <file id="file21" name_suffix="_grid_V" description="ocean V grid variables" >
           <field field_ref="vbar"         name="vbar"    long_name="barotropic_y_velocity" />
           <field field_ref="vtau"         name="vtau"    long_name="Wind Stress along j`-axis" />
-           <field field_ref="ssu"         name="ssu"    long_name="ocean surface current along i-axis"    />
+           <field field_ref="ssv"         name="ssv"    long_name="ocean surface current along j-axis"    />
         </file>
 
       </file_group>
