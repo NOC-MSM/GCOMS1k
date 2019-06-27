@@ -1,4 +1,4 @@
-DOMNAM='BLZE12';
+DOMNAM='GTHI35';
 environment
 addpath(genpath('/login/jdha/matlab/new_matlab/utilities/ann_mwrapper'))
 
@@ -8,25 +8,41 @@ mouth_fname=[domain_path  '/' DOMNAM '/' DOMNAM '_rivermouths.txt'];
 
 %Make river forcing from grided catchment data and a list of river mouths
 
-%% read list of known river mouth e.g. from google maps
+%% read list of known river mouth e.g. from google maps STN-30p
 nriv=0;
 fid=fopen(mouth_fname);
 clear lon_riv lat_riv
+STNid=0;
 rn=fgets(fid);
+
 %while(~isempty(deblank(rn)));
  while rn ~= -1
 rr=str2num(rn);
 if isempty(rr);
+ % its a name
  disp([rn])   
+ aa=strfind(rn,':');
+ if ~isempty(aa)
+ STNid=str2num(rn(aa+1:end));
+ disp(STNid)
+ end
+ 
 else
  nriv=nriv+1;
  disp(rr)
  lon_riv(nriv)=rr(1);
  lat_riv(nriv)=rr(2);
+ STN_riv(nriv)=STNid;
+ try
+  frac_riv(nriv)=rr(3);
+ catch
+     frac_riv(nriv)=1.0;
+ end
+  
 end
 rn=fgets(fid);
 end
-
+%%
 % Grid information
 Re=6367456.0*pi/180;
 lon = double(ncread(coords_fname,'nav_lon'));
@@ -91,11 +107,11 @@ else
 load river_mouths.mat
 end
 %%
-% Find cathments in region
+% Find STN catchments in region
 tmp_data = river_data;
 clear II;
 ic=0;
-s_const = 5 ;% search radius in grid cells 
+s_const = 20 ;% search radius in grid cells 
 for i = 1:length(river_data(:,1));
     [DX,I] = min(abs(lon_mask(:)-river_data(i,1))); DX=DX.*Re*cos(river_data(i,2)*pi/180) ;
     [DY,J] = min(abs(lat_mask(:)-river_data(i,2))); DY=DY.*Re ;
@@ -112,10 +128,19 @@ river_data=river_data(II,:);
 i_r = ones(length(river_data(:,1)),1)*NaN ;
 j_r = i_r ;
 %match identified rivers
-
 for iriv=1:nriv;
+if STN_riv(iriv)~=0
+    aa=find(STN_riv(iriv)==II)
+    if ~isempty(aa)
+    ictch(iriv)=aa;
+    else
+    disp(['warning specified STN river not in list'])
+    return
+    end
+else
 r=((river_data(:,1)-lon_riv(iriv))*cos(lat_riv(iriv)*pi/180)).^2+(river_data(:,2)-lat_riv(iriv)).^2;
 [mr ictch(iriv)]=min(r);
+end
 i_r(ictch(iriv))=I_riv(iriv);
 j_r(ictch(iriv))=J_riv(iriv);
 end   
