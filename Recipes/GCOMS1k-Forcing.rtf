@@ -1,13 +1,13 @@
 {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang2057{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fswiss\fprq2\fcharset0 Calibri;}{\f2\fnil\fcharset0 Courier New;}}
 {\*\generator Riched20 10.0.17134}\viewkind4\uc1 
 \pard\b\f0\fs22 GCOMS2 Forcing Generation\par
-\b0\f1\lang1033  GTHI35 = e.g. BLZE12 \par
+\b0\f1\lang1033  YLWS48 = e.g. BLZE12 \par
 Replace all in this doc for cut-and-paste\f0\lang2057\par
 \par
 ---------------------------------------------------------------------------------------------------------------\par
 \b Window 1: livljobs6\b0\par
 \par
-\f1\lang1033 export DOMNAM=GTHI35\f0\lang2057\par
+\f1\lang1033 export DOMNAM=YLWS48\f0\lang2057\par
 
 \pard\widctlpar\sl252\slmult1\f1\lang1033 export CONFIG=GCOMS1k\par
 export WORK=/work/$USER/\par
@@ -34,9 +34,9 @@ ssh-add ~/.ssh/id_rsa\f0\lang2057\par
 \pard ---------------------------------------------------------------------------------------------------------------\par
 \b Tides\b0\par
 
-\pard\widctlpar\sl252\slmult1\f1\lang1033 cd $WORK/$USER/nrct/Python\par
+\pard\widctlpar\sl252\slmult1\f1\lang1033 cd $WORK/nrct/Python\par
 git checkout Generalise-tide-input\par
-vi  $WORK/$USER/nrct/Python/pynemo/tide/nemo_bdy_tide3.py\par
+vi  $WORK/nrct/Python/pynemo/tide/nemo_bdy_tide3.py\par
 \par
 module load anaconda/2.1.0  # Want python2\par
 source activate new_env\par
@@ -82,7 +82,7 @@ addpath('/work/jholt/Git/GCOMS1k/STARTFILES/Generate_Domains/Mfiles/');\f0\lang2
 \pard\widctlpar\sl252\slmult1\f1\lang1033 Edit and run \par
 edit make_initialcondition\par
 -----------------------------------------------------------------\par
-DOMNAM=GTHI35\par
+DOMNAM=YLWS48\par
 
 \pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 rsync  -uvt   $INPUTS/$DOMNAM/$DOMNAM*IC*.nc  login.archer.ac.uk:$INPUTS_ARCH/$DOMNAM\par
 
@@ -116,7 +116,7 @@ source activate new_env\par
 export LD_LIBRARY_PATH=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/lib/amd64/server:$LD_LIBRARY_PATH\par
 export PYTHONPATH=/login/$USER/.conda/envs/new_env/lib/python2.7/site-packages/:$PYTHONPATH\par
 \par
-cd $WORK/$USER/nrct/Python\par
+cd $WORK/nrct/Python\par
 #if needed to restore before switching branches\par
 #cd pynemo/tide/\par
 #git checkout nemo_bdy_tide3.py\par
@@ -134,7 +134,7 @@ cd $INP\f0\lang2057 UTS/$DOMNAM\par
 export LD_LIBRARY_PATH=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/lib/amd64/server:$LD_LIBRARY_PATH\par
 \f0\lang2057\par
 
-\pard for individual months to 1 year\par
+\pard #for individual months to 1 year\par
 export YEAR=1995\par
 export MNTH_START=01\par
 export MNTH_STOP=12\par
@@ -160,10 +160,10 @@ mv bdydta/coordinates.bdy.nc bdydta/$DOMNAM\\_coordinates.bdy.nc \par
 
 \pard\f0 export  YEARSTART=1995\par
 export YEARSTOP=2015\par
-export  LONMIN=98\par
-export  LONMAX=109\par
-export  LATMIN=5\par
-export  LATMAX=13.7\par
+export  LONMIN=115\par
+export  LONMAX=132\par
+export  LATMIN=28\par
+export  LATMAX=44\par
 \b\par
 \b0 cat $TEMPLATES/OFFICIAL_Generate_NEMO_Forcing_NEWERA.py_template  \\\par
 | sed  "s,__YEARSTART__,$YEARSTART,g" \\\par
@@ -177,7 +177,7 @@ export  LATMAX=13.7\par
 
 \pard\widctlpar\sl252\slmult1\b0\f1\lang1033 module load nco/gcc/4.4.2.ncwa\par
 module load anaconda/2.1.0\par
-python OFFICIAL_Generate_NEMO_Forcing_NEWERA.py\par
+python OFFICIAL_Generate_NEMO_Forcing_NEWERA.py   # doesnt work on livljobs8\par
 \par
 ssh login.archer.ac.uk mkdir $INPUTS_ARCH/$DOMNAM/metdta/\par
 \par
@@ -195,7 +195,7 @@ export TEMPLATES=$INPUTS/TEMPLATES\par
 export CDIR=$WDIR//trunk_NEMOGCM_r8395/CONFIG\par
 
 \pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 export TDIR=$WDIR//trunk_NEMOGCM_r8395/TOOLS\par
-export DOMNAM=GTHI35\par
+export DOMNAM=YLWS48\par
 
 \pard\f0\lang2057 export  YEARSTART=1995\par
 \par

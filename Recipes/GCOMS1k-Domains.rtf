@@ -10,7 +10,7 @@ Replace all in this doc for cut-and-paste\f0\lang2057\par
 -----------------------------------------------------------------------------------------------------------------------------------\par
 \b Window 1: livljobs6\b0\par
 \par
-\f1\lang1033 export DOMNAM=<DOMNAM>\f0\lang2057\par
+\f1\lang1033 export DOMNAM=YLWS48\f0\lang2057\par
 
 \pard\widctlpar\sl252\slmult1\f1\lang1033 export CONFIG=GCOMS1k\par
 export WDIR=/projectsa/accord/$CONFIG\par
@@ -36,25 +36,25 @@ cd /work/jholt/Git/GCOMS1k/STARTFILES/Generate_Domains/Mfiles\par
 edit \f1\lang1033 extract_LMEs_guide.m : define iwant_LMEs\f0\lang2057\par
 \par
 \f1\lang1033 extract_LMEs_guide\par
-Indentifier = <DOMNAM>  \par
+Indentifier = YLWS48  \par
 Extracts gebco bathymetry if needed \par
 \par
-Run GridBuilder for : <DOMNAM>\par
+Run GridBuilder for : YLWS48\par
 \f0\lang2057 load bathy from /projectsa/accord/GCOMS1k/LME/LME_Bathy/LME_12_GEBCO_bathy.nc \par
 mask setting Use GSHHG\par
 
 \pard\nowidctlpar\f1 Adjust area, rotation and number of cells to target resolution\par
 Start box at bottom left\f0\par
 
-\pard load/save grid file to /projectsa/accord/GCOMS1k/Grid_files/\f1\lang1033 <DOMNAM>_Grid.mat\f0\lang2057\par
+\pard load/save grid file to /projectsa/accord/GCOMS1k/Grid_files/\f1\lang1033 YLWS48_Grid.mat\f0\lang2057\par
 \par
 exit grid builder\par
-DOMNAM='<DOMNAM>'\par
+DOMNAM='YLWS48'\par
 \par
 run GridBuilder_to_NEMO\par
 \par
 Produces:\par
-<DOMNAM>_bathy_meter.nc  <DOMNAM>_coordinates.nc\par
+YLWS48_bathy_meter.nc  YLWS48_coordinates.nc\par
 -----------------------------------------------------------------------------------------------------------------------------------\par
 -----------------------------------------------------------------------------------------------------------------------------------\par
 \par
@@ -79,9 +79,13 @@ export TEMPLATES=$INPUTS/TEMPLATES\par
 export CDIR=$WDIR//trunk_NEMOGCM_r8395/CONFIG\par
 
 \pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 export TDIR=$WDIR//trunk_NEMOGCM_r8395/TOOLS\par
-export DOMNAM=<DOMNAM>\par
+export DOMNAM=YLWS48\par
 
-\pard\f0\lang2057\par
+\pard\sl240\slmult1\f0\lang9 module swap PrgEnv-cray PrgEnv-intel\par
+module unload cray-netcdf\par
+module load cray-netcdf-hdf5parallel cray-hdf5-parallel\par
+
+\pard\lang2057\par
 cd $INPUTS/$DOMNAM\par
 \par
 
