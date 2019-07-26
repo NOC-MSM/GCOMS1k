@@ -4,7 +4,8 @@ lon_dom=double(ncread([domcfg_fname],'nav_lon'));
 lat_dom=double(ncread([domcfg_fname],'nav_lat'));
 dx_dom=double(ncread([domcfg_fname],'e1t'));
 dy_dom=double(ncread([domcfg_fname],'e2t'));
-
+dxu_dom=double(ncread([domcfg_fname],'e1u'));
+dyv_dom=double(ncread([domcfg_fname],'e2v'));
 D_dom=double(ncread([bathy_fname],'Bathymetry'));
 mbot=double(ncread([domcfg_fname],'bottom_level'));
 mask=double(ncread([domcfg_fname],'top_level'));
@@ -16,3 +17,5 @@ y_min=min(lat_dom(:));
 
 x_max=max(lon_dom(:));
 y_max=max(lat_dom(:));
+g=9.81;
+fcor=1.458423d-4*sin(pi/180.*lat_dom);

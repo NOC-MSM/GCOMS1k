@@ -35,6 +35,14 @@ ny=size(D,2);
 %floodfill to find single area
 [mm]=numbarea(mask,1);
 mask(mm>1)=0;
+%% Add domain specific fixes here
+try
+eval(['run ' DOMNAM '_bathyfix.m']);
+catch
+  Disp('No fixes')
+
+end
+
 D(mask==0)=0;
 %%
 

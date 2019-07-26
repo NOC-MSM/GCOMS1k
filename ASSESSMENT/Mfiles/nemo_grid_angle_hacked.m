@@ -27,8 +27,8 @@ function [gcos,gsin] = nemo_grid_angle(coord_fname,jj,ii) %#ok<INUSL>
 
 % get constants
 
-nemo_phycst
-
+%nemo_phycst
+rad=pi/180;rpi=pi;
 % north pole direction & modulous (at t-point)
 
 zlam=ncread(coord_fname,'glamt');
