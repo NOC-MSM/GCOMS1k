@@ -56,7 +56,7 @@ tpd = <time steps per day>
 # in monthlyrun.pbs
 Set email address, DOMNAM, 
 IJ= < number of cores > = (select-1)*24
-Chnage file names for tidy up.
+Change file names for tidy up.
 
 ::
 run_nemo.sh   monthlyrun.pbs
