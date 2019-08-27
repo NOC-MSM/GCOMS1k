@@ -3,25 +3,25 @@ exec ssh-agent $SHELL
 ssh-add ~/.ssh/id_rsa
 
 On ARCHER
----------------------------------------------------------------------------------------------------------------::
-export CONFIG=GCOMS1k
-export DOMNAM=BLZE12
-export EXPNUM=02
-export WORK=/work/n01/n01/$USER
-export WDIR=$WORK/$CONFIG
-export INPUTS=$WDIR/INPUTS
-export TEMPLATES=$INPUTS/TEMPLATES
-export CDIR=$WDIR/trunk_NEMOGCM_r8395/CONFIG
-export TDIR=$WDIR//trunk_NEMOGCM_r8395/TOOLS
-export EXP=$CDIR/$CONFIG/$DOMNAM\_$EXPNUM 
-export EXP=$CDIR/$CONFIG/$DOMNAM\_$EXPNUM
-export TMPLD=$CDIR/$CONFIG/GCOMS1k_templates
-export STARTYEAR=1995
-module swap PrgEnv-cray PrgEnv-intel
-module unload cray-netcdf
-module load cray-netcdf-hdf5parallel cray-hdf5-parallel
+---------------------------------------------------------------------------------------------------------------:: 
+ export CONFIG=GCOMS1
+ export DOMNAM=BLZE12
+ export EXPNUM=02
+ export WORK=/work/n01/n01/$USER
+ export WDIR=$WORK/$CONFIG
+ export INPUTS=$WDIR/INPUTS
+ export TEMPLATES=$INPUTS/TEMPLATES
+ export CDIR=$WDIR/trunk_NEMOGCM_r8395/CONFIG
+ export TDIR=$WDIR//trunk_NEMOGCM_r8395/TOOLS
+ export EXP=$CDIR/$CONFIG/$DOMNAM\_$EXPNUM 
+ export EXP=$CDIR/$CONFIG/$DOMNAM\_$EXPNUM
+ export TMPLD=$CDIR/$CONFIG/GCOMS1k_templates
+ export STARTYEAR=1995
+ module swap PrgEnv-cray PrgEnv-intel
+ module unload cray-netcdf
+ module load cray-netcdf-hdf5parallel cray-hdf5-parallel
 
-mkdir -p  $EXP
+ mkdir -p  $EXP
 ----------------------------------------------------------------------
 cd $EXP
 
