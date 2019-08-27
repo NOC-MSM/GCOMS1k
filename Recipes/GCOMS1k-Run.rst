@@ -45,6 +45,28 @@ cp $TMPLD/run_nemo.sh  .
 
 # check all links work
 find . -type l ! -exec test -e {} \; -print
+------
+
+------- starting a run----------
+# in run_nemo.sh
+set y= <start year>
+m=<start month> .....Note no 0 in month
+tpd = <time steps per day> 
+
+# in monthlyrun.pbs
+Set email address, DOMNAM, 
+IJ= < number of cores > = (select-1)*24
+Chnage file names for tidy up.
+
+::
+run_nemo.sh   monthlyrun.pbs
+
+-------------re staring a run
+set y= <start year>
+m=<start month> .....Note no 0 in month
+nit0 = <time start to start on> = restart step + 1
+INIT=1
+ ::
 
 
 run_nemo.sh   monthlyrun.pbs  
