@@ -1,5 +1,5 @@
 
-rivfilename=[domain_path  '/' DOMNAM '/' DOMNAM '_rivertest_v4.nc'];
+rivfilename=[domain_path  '/' DOMNAM '/' DOMNAM '_rivertest_v2.nc'];
 check_delete(rivfilename);
 
 %%
@@ -11,22 +11,23 @@ mnth=1;
 rorunoff=zeros(nx,ny,12);  % value of dummy variable
  for i=1:length(i_r);
      if ~mnth
-     rorunoff(i_r(i),j_r(i),:)=river_data(i,4)*rho0/(e1t(i_r(i),j_r(i)).*e1t(i_r(i),j_r(i)));
+     rorunoff(i_r(i),j_r(i),:)=river_data(i,4)*rho0/(e1t(i_r(i),j_r(i)).*e2t(i_r(i),j_r(i)));
      else
      for im=1:12;
-       rorunoff(i_r(i),j_r(i),im)=river_data(i,4)*rho0/(e1t(i_r(i),j_r(i)).*e1t(i_r(i),j_r(i)))*river_data(i,4+im);  
+       rorunoff(i_r(i),j_r(i),im)=river_data(i,4)*rho0/(e1t(i_r(i),j_r(i)).*e2t(i_r(i),j_r(i)))*river_data(i,4+im);  
      end
      end
  end
  
 
  %fixes
-if strcmp(DOMNAM,'GCOMS1k_LME_12_BLZE');
- rr=rorunoff(153,57,1);
-rorunoff(153,57,:)=rr/2;
-rorunoff(152,57,:)=rr/2;
+if strcmp(DOMNAM,'BLZE12');
+ rr=rorunoff(156,61,1);
+rorunoff(156,61,:)=rr/3;
+rorunoff(157,61,:)=rr/3;
+rorunoff(158,61,:)=rr/3;
 
-rr=rorunoff(112,22);
+rr=rorunoff(111,22,:);
 rorunoff(111,22,:)=rr/3;
 rorunoff(112,22,:)=rr/3;
 rorunoff(113,22,:)=rr/3;

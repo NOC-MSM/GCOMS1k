@@ -32,6 +32,7 @@ y=lat_prntex;
 figure(1)
 gcos=1;
 gsin=0;
+salrange=[26 34.5]
 plot_sal_uv
 
 hold on;

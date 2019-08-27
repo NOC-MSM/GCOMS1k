@@ -1,6 +1,6 @@
-DOMNAM='YLWS48';
+DOMNAM='BLZE12';
 environment
-num_land_mass=2;
+num_land_mass=1;
 addpath(genpath('/login/jdha/matlab/new_matlab/utilities/ann_mwrapper'))
 
 bathy_fname=[domain_path  '/' DOMNAM '/' DOMNAM '_bathy_meter.nc'];
@@ -49,6 +49,7 @@ lat_mask=lat(mask);
 
 %%
 %catchments in the domaims
+clear name_STN lon_rr lat_rr
 disp('Named Basins in Domains. Might want to include these in: ')
 disp(mouth_fname)
 fid=fopen([rivers_path 'STN-30p-Names.csv']);
@@ -78,6 +79,7 @@ disp([rn])
 ic=ic+1;
 lon_rr(ic)=lon_r;
 lat_rr(ic)=lat_r;
+name_STN{ic}=name;
 rn=fgets(fid);
 end
 
@@ -88,7 +90,7 @@ end
 nriv=0;
 try
 fid=fopen(mouth_fname);
-clear lon_riv lat_riv
+clear lon_riv lat_riv STN_riv
 STNid=0;
 rn=fgets(fid);
 
@@ -102,6 +104,8 @@ if isempty(rr);
  if ~isempty(aa)
  STNid=str2num(rn(aa+1:end));
  disp(STNid)
+ else
+ STNid=0
  end
  
 else
@@ -120,6 +124,7 @@ end
 rn=fgets(fid);
  end
 end
+
 %%
 
 
@@ -145,16 +150,17 @@ if new_file
 %Global news 2    
 river_data = load([rivers_path    'GlobalNEWS2_RH2000Dataset-version1.0.csv']) ;  
 river_mnthfrac = load([month_rivs_path    'Discharge_AM2000.out']) ;  
-mnthfrac=river_mnthfrac (:,2:13);
+mnthfrac=river_mnthfrac (:,2:13)*12; 
 %%scale data:
 sc=1000^3/365/24/3600;
 river_data(:,4)= river_data(:,4).*sc;
 
 %%
 STN30p=river_data(:,8);
+
 % add a river index
     
-river_data(:,5 )= 1:length(river_data(:,1)) ;
+%river_data(:,5 )= 1:length(river_data(:,1)) ;
 else
 %load in previous set
 load river_mouths.mat
@@ -174,7 +180,11 @@ for i = 1:length(river_data(:,1));
  end
 end
 river_data=river_data(II,:);
-
+mnthfrac=mnthfrac(II,:);
+for i=1:length(II)
+name_STN1{i}=name_STN{II(i)};
+end
+name_STN=name_STN1;
 
 %% i_r and j_r are grid indicies for each catchmemt, with 2nd index for multiple outputsfrom each catchment
 
@@ -193,8 +203,11 @@ if STN_riv(iriv)~=0
     return
     end
 else
+%listed river mouths with non-specified names    
 r=((river_data(:,1)-lon_riv(iriv))*cos(lat_riv(iriv)*pi/180)).^2+(river_data(:,2)-lat_riv(iriv)).^2;
 [mr ictch(iriv)]=min(r);
+
+disp(['match to : ' name_STN{ictch(iriv)}]);
 end
 ip=find(isnan(i_r(ictch(iriv),:)),1,'first');
 i_r(ictch(iriv),ip)=I_riv(iriv);
@@ -203,7 +216,7 @@ frac_r(ictch(iriv),ip)=frac_riv(iriv);
 end   
    hold off
   drawnow
-  
+
 %%
 D(D==0)=NaN;
 
