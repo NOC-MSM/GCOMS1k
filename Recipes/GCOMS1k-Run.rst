@@ -4,7 +4,7 @@ ssh-add ~/.ssh/id_rsa
 
 On ARCHER
 ---------------------------------------------------------------------------------------------------------------:: 
- export CONFIG=GCOMS1
+ export CONFIG=GCOMS1k
  export DOMNAM=BLZE12
  export EXPNUM=02
  export WORK=/work/n01/n01/$USER
@@ -90,14 +90,27 @@ export  OUTPUTS=/projectsa/accord/GCOMS1k/OUTPUTS/
 export INPUTS_ARCH=/work/n01/n01/$USER/$CONFIG/INPUTS/
 export CDIR_ARCH=/nerc/n01/n01/$USER/$CONFIG/OUTPUT/
 export EXP_ARCH=/work/n01/n01/jholt/GCOMS1k/trunk_NEMOGCM_r8395/CONFIG/$CONFIG/
-export EXPNUM=01
-export DOMNAM=YLWS48
+export EXPNUM=02
+export DOMNAM=BLZE12
 
 mkdir  -p $OUTPUTS/$DOMNAM\_$EXPNUM 
 cd $OUTPUTS/$DOMNAM\_$EXPNUM
 rsync -uvtr login.archer.ac.uk:$CDIR_ARCH/$DOMNAM\_$EXPNUM/* . 
 
 rsync -uvtr login.archer.ac.uk:$EXP_ARCH/$DOMNAM\_$EXPNUM/OUTPUT/* . 
+
+
+
+# infinite loop to retrieve data:
+while : 
+do
+rsync -uvtr login.archer.ac.uk:$EXP_ARCH/$DOMNAM\_$EXPNUM/OUTPUT/* . 
+sleep 3h
+done
+
+
+
+
 
 
 
