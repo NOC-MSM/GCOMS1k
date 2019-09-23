@@ -38,8 +38,38 @@ ncap2 -O -s 'jpiglo=42; jpjglo=49' BLZE12_C1_domain_cfg.nc BLZE12_C1_domain_cfg.
 
 #Tides
 run Tides pynemo recipe
+##################################
+Open BC's
+module load anaconda/2.1.0  # Want python2
+source activate new_env
+
+git checkout  ORCA0083
+git pull
+
+cd $INPUTS/$DOMNAM
+export PYTHONPATH=/login/$USER/.conda/envs/new_env/lib/python2.7/site-packages/:$PYTHONPATH
+export LD_LIBRARY_PATH=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/lib/amd64/server:$LD_LIBRARY_PATH
+
+#for individual months to 1 year
+export YEAR=2015
+export MNTH_START=01
+export MNTH_STOP=12
+
+cat $TEMPLATES/namelist.bdy_template  \
+| sed  "s,__YEAR__,$YEAR,g" \
+| sed  "s,__DOMNAM__,$DOMNAM,g"   \
+|sed   "s,__MNTH_START__,$MNTH_START,g" \
+|sed   "s,__MNTH_STOP__,$MNTH_STOP,g" \
+> namelist.bdy
 
 
+
+
+pynemo -s namelist.bdy
+
+
+
+#
 #
 cd $INPUTS/$DOMNAM
 ssh login.archer.ac.uk mkdir $INPUTS_ARCH/$DOMNAM
