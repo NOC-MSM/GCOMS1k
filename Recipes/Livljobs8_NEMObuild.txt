@@ -14,8 +14,8 @@ export TMPLD=$CDIR/$CONFIG/GCOMS1k_templates
 module load intel_compiler/17.0.4
 module load zlib/1.2.11-intel17.0.4
 module load openmpi/1.8.1-intel17.0.4
-#module load hdf5/1.8.18-intel17.0.4
-#module load netcdf/4.4.1.1-intel17.0.4
+module load hdf5/1.8.18-intel17.0.4
+module load netcdf/4.4.1.1-intel17.0.4
 module load hdf5/1.8.18-intel17.0.4-parallel
 module load netcdf/4.4.1.1-intel17.0.4-parallel
 

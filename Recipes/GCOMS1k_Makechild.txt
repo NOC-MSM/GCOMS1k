@@ -52,9 +52,59 @@ export PRNT_DOMNAM=BLZE12
 
 #
 ---------
+#Compile on  on docker 
 
-
+ docker run -v C:\Users\jholt\work\NEMO-Docker\SRC:/SRC -t -i nemo/compiler /bin/bash
 
 
 
 ----------
+#Run on windsows 10 docker
+https://github.com/jpolton/Belize/blob/master/Level-1:-Get-and-Build-Docker-Container-and-NEMO-Met-Surge-Config.md 
+in windows powershell shell
+
+$CONFIG="GCOMS1k"
+$DOMNAM="BLZE12_C1"
+$EXPNUM="01L"
+$WDIR="C:\Users\jholt\work\NEMO-Docker\SRC\"
+$INPUTS=$WDIR + "\INPUTS\" + $DOMNAM +"\"
+$TEMPLATES=$INPUTS + "\TEMPLATES\"
+$CDIR=$WDIR + "\trunk_NEMOGCM_r8395\CONFIG\"
+$TDIR=$WDIR + "\\trunk_NEMOGCM_r8395\TOOLS\"
+$EXP=$CDIR + $CONFIG + "\" +  $DOMNAM + "_" + $EXPNUM
+$TMPLD=$CDIR + $CONFIG + "GCOMS1k_templates\"
+$STARTYEAR="1995"
+
+
+mkdir $INPUTS
+cd  $INPUTS
+cp -r \\store\projectsa\accord\GCOMS1k\INPUTS\BLZE12_C1\* .
+mkdir $EXP
+cd $EXP
+
+cp  \\store\work/NEMO/GCOMS1k/trunk_NEMOGCM_r8395/CONFIG/GCOMS1k/BLZE12_C1_01L\* .
+
+rm *1d*
+rm *1h*
+
+
+mkdir bdydta
+mkdir metdta
+cp -r $INPUTS/bdydta/*   bdydta
+cp -r $INPUTS/metdta/*   metdta
+
+
+
+
+$r1 =  $INPUTS + $DOMNAM +"_IC_v1_ORCA0083-N06_" + $STARTYEAR + "0105d05T.nc"
+cp $r1 initcd_votemper.nc
+cp $r1 initcd_vosaline.nc
+$r2 = "bdydta/" + $DOMNAM +"_coordinates.bdy.nc" 
+cp $r2 coordinates.bdy.nc
+$r3 = $DOMNAM +"_domain_cfg.nc" 
+cp $INPUTS/BLZE12_C1_domain_cfg2.nc domain_cfg.nc  
+
+cp $INPUTS/BLZE12_C1_rivertest_v1.nc runoff.nc
+
+cp $CDIR/$CONFIG/BLD/bin/nemo.exe opa
+cp \\store\work\Git\GCOMS1k\GCOMS1k_templates\namelist_ref .
