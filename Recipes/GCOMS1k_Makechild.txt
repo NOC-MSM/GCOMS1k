@@ -1,3 +1,4 @@
+export DOMNAM=BLZE12
 export PRNT_DOMNAM=BLZE12
 export DOMNAM=$DOMNAM\_C1
 export CONFIG=GCOMS1k
@@ -61,9 +62,9 @@ cat $TEMPLATES/namelist.bdy_template  \
 |sed   "s,__MNTH_START__,$MNTH_START,g" \
 |sed   "s,__MNTH_STOP__,$MNTH_STOP,g" \
 > namelist.bdy
-
-
-
+module load nco/gcc/4.4.2
+ ncrename -v e3t_0,e3t -v e3u_0,e3u -v e3v_0,e3v -v e3w_0,e3w -v gdept_0,gdept -v gdepw_0,gdepw -v gdept_1d,gdept_0 -v gdepw_1d,gdepw_0 -v e3t_1d,e3t_0 -v e3w_1d,e3w_0 $INPUTS/$PRNT_DOMNAM/domain_cfg.nc mesh_zgr_renamed.nc
+take mask file form run of parent model
 
 pynemo -s namelist.bdy
 
