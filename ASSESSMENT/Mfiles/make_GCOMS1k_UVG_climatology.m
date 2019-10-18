@@ -6,7 +6,7 @@ environment
 UV=0;
 if ~exist('DOMNAM')
 DOMNAM='BLZE12';
-EXPNUM='01';
+EXPNUM='02';
 RUNNAM='';
 end
 

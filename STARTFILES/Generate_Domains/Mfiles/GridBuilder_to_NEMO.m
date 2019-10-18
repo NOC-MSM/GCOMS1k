@@ -39,7 +39,7 @@ mask(mm>1)=0;
 try
 eval(['run ' DOMNAM '_bathyfix.m']);
 catch
-  Disp('No fixes')
+  disp('No fixes')
 
 end
 

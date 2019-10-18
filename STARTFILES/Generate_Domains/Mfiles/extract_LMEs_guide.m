@@ -4,7 +4,7 @@ figure(1)
 read_lme
 hypoxia_region_in_LME;
 big_Nrivers_in_LME
-iwant_LMEs=[47 48];
+iwant_LMEs=[32 34];
 id=0;clear dom
 for i=1:length(iwant_LMEs);
     ii=ilme_inx(iwant_LMEs(i))

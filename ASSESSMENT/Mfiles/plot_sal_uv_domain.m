@@ -3,11 +3,11 @@ addpath('/work/jholt/Git/GCOMS1k/STARTFILES/Generate_Forcing/Mfiles/');
 addpath('/login/jdha/matlab/new_matlab/models/nemo/utilities');
 addpath('/login/jdha/matlab/new_matlab/models/nemo/general');
 environment
-DOMNAM='YLWS48';
-EXPNUM='01';
+DOMNAM='BLZE12';
+EXPNUM='02';
 RUNNAM='';
-im=7;
-iy=1995;
+im=10;
+iy=2015;
 UV=1;
 TS=1;
 SSH=0;
@@ -40,11 +40,11 @@ np=8
 %np=2;
 
 %scale arrows
-Sc=0.012
-%Sc=0.0015;
+%Sc=0.012
+Sc=0.003;
 
 salrange=[26 34.5]
-
+salrange=[30 36]
 xu_sc=(x(1,end)+x(1,1))/2;
 yu_sc=(y(1,end)+y(1,1))/2;
 Uscale=1;
@@ -54,4 +54,4 @@ grid_file=[domain_path  '/' DOMNAM '/' DOMNAM '_domain_cfg.nc'];
 plot_sal_uv
 
 colorbar
-title(['1d mean currents and salinity YLWS48 1 Jul 1995 np=8'])
+title(['1d mean currents and salinity BLZE12 1 Oct 2015 np=8 run02'])
