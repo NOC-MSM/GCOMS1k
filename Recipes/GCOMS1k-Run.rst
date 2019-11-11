@@ -5,8 +5,8 @@ ssh-add ~/.ssh/id_rsa
 On ARCHER
 ---------------------------------------------------------------------------------------------------------------:: 
  export CONFIG=GCOMS1k
- export DOMNAM=BLZE12
- export EXPNUM=02
+ export DOMNAM=GTHI35
+ export EXPNUM=01
  export WORK=/work/n01/n01/$USER
  export WDIR=$WORK/$CONFIG
  export INPUTS=$WDIR/INPUTS
@@ -90,8 +90,8 @@ export  OUTPUTS=/projectsa/accord/GCOMS1k/OUTPUTS/
 export INPUTS_ARCH=/work/n01/n01/$USER/$CONFIG/INPUTS/
 export CDIR_ARCH=/nerc/n01/n01/$USER/$CONFIG/OUTPUT/
 export EXP_ARCH=/work/n01/n01/jholt/GCOMS1k/trunk_NEMOGCM_r8395/CONFIG/$CONFIG/
-export EXPNUM=02
-export DOMNAM=BLZE12
+export EXPNUM=01
+export DOMNAM=GTHI35
 
 mkdir  -p $OUTPUTS/$DOMNAM\_$EXPNUM 
 cd $OUTPUTS/$DOMNAM\_$EXPNUM
