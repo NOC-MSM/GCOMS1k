@@ -4,7 +4,7 @@ flipit=0;
 %DOMNAM='GCOMS1k_LME_12_BLZE';
 grid_name=[DOMNAM '_Grid.mat'];
 
-land_value=0;
+land_value=0%-10;
 load([grid_path grid_name]);
 nx=SG.grid.m-1;
 ny=SG.grid.n-1;
@@ -19,8 +19,8 @@ y=flipud(fliplr(y));
 mask=flipud(fliplr(mask));
 end
 %must set to land value before finding single sea area
-D(D<land_value)=0;
-mask(D==0)=0;
+D(D<land_value)=land_value;
+mask(D==land_value)=0;
 if(0)
 i=1:120;ip1=1:121;
 D=D(i,:);
@@ -43,7 +43,7 @@ catch
 
 end
 
-D(mask==0)=0;
+D(mask==0)=land_value;
 %%
 
 
@@ -136,7 +136,7 @@ end
 %glamf  gphif
 %%
 DD=D;
-DD(D==0)=NaN;
+DD(D==land_value)=NaN;
 figure
 pcolor(glamt,gphit,DD);shading flat;colorbar
 title([DOMNAM ' : Bathymetry']);
