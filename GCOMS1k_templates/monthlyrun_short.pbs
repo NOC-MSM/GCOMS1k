@@ -1,0 +1,183 @@
+#!/bin/bash --login
+#PBS -l select=8
+#PBS -l walltime=00:20:00
+#PBS -A n01-ACCORD 
+#PBS -m bea
+#PBS -M jholt@noc.ac.uk
+#PBS -q short
+
+##--- LOAD MODULES -------------------------------------------------
+module swap PrgEnv-cray PrgEnv-intel
+module load cray-netcdf-hdf5parallel
+module load cray-hdf5-parallel
+
+##--- Set the number of threads to 1 -------------------------------
+##   This prevents any system libraries from automatically 
+##   using threading.
+export OMP_NUM_THREADS=1
+module load atp
+export ATP_ENABLED=1
+export EXEC=opa
+ulimit -c unlimited
+ulimit -s unlimited
+
+##--- MOVE TO GOOD FOLDER ------------------------------------------
+export RUNDIR=$(readlink -f $PBS_O_WORKDIR)
+cd $RUNDIR
+rm -f core
+
+##--- TIME SELECTION -----------------------------------------------
+## year and month are the formatted version of running month and year 
+##     to be used for script launching
+## y and m are the numeric one to be used in counting
+iy1=$((y))
+iy2=$((y)) # just one year for now but could do multiple
+im2=$((m))  #  2 months
+if [ $im2 -gt 12 ]; then im2=12; fi   # if out of step at end of year just do one month
+
+#--- LOOP TO RUN SEQUENCES -----------------------------------------
+yy=$iy1
+while [  $yy -le $iy2 ]; do
+
+   year=${yy}
+
+   ##loop for months
+   if [ $yy -eq $iy1 ]; then mm=$m; else mm=1; fi
+   echo 'MONTH' $mm
+   while [ $mm -le $im2 ]; do
+
+  
+      ## PREPARE MONTH
+      if [ $mm -lt 10 ] ; then
+         month=0$mm
+      else
+         month=$mm
+      fi
+
+      ## SOME DISPLAYS
+      date
+      echo "Running year $year, month $month ..."
+
+      ## MANAGE FIRST TIME STEP
+      ## use INIT to provide a restart from a previous time
+      echo INIT $INIT
+      if [ $INIT -lt 0 ]; then
+         euler=0                  ## NEMO: euler parameter
+         rstctl=0                 ## NEMO: control restart option: 0 for first iteration
+         tideharmo=.false.        ## NEMO: no tide harmonic analysis restart
+         LNRST=.false.            ## TOP : no restart for tracers at beginning
+         nitdum=`expr 0 - $INIT`  ## use the iteration name to find good restart file
+         INIT=0                   ## reset the timer to 0 as we only want to use a restart with 
+                                  ## wrong iteration name at first iteration
+         RSTART=.false.
+      else
+         euler=1                  ## euler parameter NEMO - perfect restart
+         rstctl=2                 ## NEMO: control restart option: 2 to check index
+         tideharmo=.true.         ## NEMO: restart tide harmonic analysis
+         LNRST=.true.             ## TOP : we want a restart now
+         nitdum=`expr $nit0 - 1`  ## use the last iteration of previous run
+         RSTART=.true.
+      fi
+
+      echo nitdum $nitdum
+      ## DEAL WITH RESTART FILE NAME
+      if [ $nitdum -lt 100000000 ] ; then
+           nitrst=`printf "%08d" $nitdum`
+      else
+           echo 'run too long'
+           exit
+      fi
+      RESFILE='GCOMS1k_LME_12_BLZE_'$nitrst'_restart'
+      RESTRCFILE='restart_'$nitrst'_trc'
+      nn_DATE=$year$month'01'
+      #RESFILE='co7_'$year$month'01_restart'
+      ##get run length in iterations (nit)
+      case $month in
+	04|06|09|11) nit=$((30*tpd)) ;;
+	#february considering leap years:
+	02) if [ `expr $year % 4` -ne 0 -o `expr $year % 100` -eq 0 -a `expr $year % 400` -ne 0 ]; then nit=$((28*tpd)); else nit=$((29*tpd)); fi ;;
+	#february not considering leap years:
+	#02) nit=$((28*tpd)) ;;
+	*) nit=$((31*tpd)) ;;
+      esac
+
+      ##define namrun NEMO namelist
+      nitend=`expr $nit0 + $nit`
+      nitend=`expr $nitend - 1`
+      wrt=$nit
+
+      ##Time management
+      m1=$((mm+1))
+      y1=$year
+      if [ $m1 -eq 13 ]; then 
+         m1=1
+         y1=$((year+1))
+      fi
+      if [ $m1 -lt 10 ] ; then
+         month1=0$m1
+      else
+         month1=$m1
+      fi
+
+      ## Update CORE NEMO namelist
+      cat namelist_cfg_template \
+        | sed "s,__IT000__,$nit0,g" \
+        | sed "s,__ITEND__,$nitend,g" \
+        | sed "s,__RSTCTL__,$rstctl,g" \
+        | sed "s,__RSTART__,$RSTART,g" \
+        | sed "s,__EULER__,$euler,g" \
+        | sed "s,__II__,$I,g" \
+        | sed "s,__JJ__,$J,g" \
+        | sed "s,__IJ__,$IJ,g" \
+        | sed "s,__NNDATE__,$nn_DATE,g" \
+        | sed "s,__RESFILE__,$RESFILE,g" \
+        | sed "s,__THANARST__,$tideharmo,g" \
+        > namelist_cfg
+
+      ## Update TOP namelist
+      cat namelist_top_cfg.template \
+        | sed "s,__LNRST__,$LNRST,g" \
+        | sed "s,__RESTRCFILE__,$RESTRCFILE,g" \
+        > namelist_top_cfg
+
+      ##Run config
+      echo "=== running nemo on $IJ cores (24 tasks per node)"
+      INIT=`expr $INIT + 1`
+      IJ=168
+      aprun -b -n 5 -N 5 ./xios_server.exe : -n $IJ -N 24 $EXEC 
+ 
+      date
+      RC=$? ; if test $RC -ne 0 ;  then echo   failed with error code = $RC ; exit ; fi
+
+      # backup output 
+      OUTDIR=$RUNDIR/LONGRUN/$year/$month
+      mkdir -p $OUTDIR
+      mv GCOMS1k_LME_12_BLZE*grid* $OUTDIR/.
+      mv 25hourm_grid*       $OUTDIR/.
+      mv shelftmb_grid*      $OUTDIR/. 
+      mv ocean.output        $OUTDIR/ocean.output
+      mv namelist_cfg        $OUTDIR/namelist_cfg
+      mv namelist_top_cfg    $OUTDIR/namelist_top_cfg
+      mv solver.stat         $OUTDIR/solver.stat
+      mv timing.output       $OUTDIR/timing.output
+      mv output.namelist.*   $OUTDIR/output.namelist.dyn 
+      mv *abort*             $OUTDIR/.
+      mv tracer*             $OUTDIR/.
+      mv *harmonic_grid*     $OUTDIR/.
+
+      # Update iteration
+      nit0=`expr $nitend + 1`
+
+      mm=$((mm+1))
+   done # 1..12 months
+
+   yy=$((yy+1))
+done # year and year+1
+
+# submit next run
+if [ $y1 -lt 1997 ]; then
+   echo qsub -v m=$m1,y=$y1,nit0=$nit0,tpd=$tpd,INIT=$INIT -N AMM15$y1$month1 monthlyrun.pbs 
+        qsub -v m=$m1,y=$y1,nit0=$nit0,tpd=$tpd,INIT=$INIT -N AMM15$y1$month1 monthlyrun.pbs
+fi
+
+exit
