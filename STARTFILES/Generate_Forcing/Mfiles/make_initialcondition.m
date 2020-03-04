@@ -1,6 +1,6 @@
 %set up environment
 environment
-DOMNAM='YLWS48';
+DOMNAM='SRIL34';
 addpath(genpath('/login/jdha/matlab/new_matlab/utilities/ann_mwrapper'))
 %Extract pararent grid and T & S data
 Year='1995';
