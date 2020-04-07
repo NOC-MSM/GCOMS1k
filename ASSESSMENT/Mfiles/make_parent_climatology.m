@@ -52,7 +52,7 @@ ll(1)=1;
 
 im=1:12;
 yearstart=1995;
-yearstop=2005;
+yearstop=1995;
 nyear = yearstop-yearstart+1;
 for iv=[1 3];
  eval([varname{iv} '=zeros(nx_p,ny_p,12); ' ]);

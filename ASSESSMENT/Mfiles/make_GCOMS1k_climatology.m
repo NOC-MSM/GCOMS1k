@@ -9,7 +9,8 @@ DOMNAM='BLZE12';
 EXPNUM='01';
 RUNNAM='';
 end
-
+TS=1;
+SSH=0;
 domain_grid
 
 varname{1}='sst';
@@ -23,7 +24,7 @@ ll(1)=1;
 
 im=1:12;
 yearstart=1995;
-yearstop=2005;
+yearstop=1995;
 nyear = yearstop-yearstart+1;
 for iv=[1 3];
  eval([varname{iv} '=zeros(nx,ny,12); ' ]);

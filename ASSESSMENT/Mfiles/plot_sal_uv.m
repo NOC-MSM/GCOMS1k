@@ -49,7 +49,7 @@ m_proj('Mercator','longitudes',[x0 x1],'latitudes',[y0 y1])
 [Xu,Yu]=m_ll2xy(x(ii,jj),y(ii,jj));
 
 pcolor(X,Y,sss_m(i,j));shading flat
-caxis([32 36.3])
+caxis(salrange)
 hold on
 quiver(Xu,Yu,Sc*ssu_m(ii,jj),Sc*ssv_m(ii,jj),0)
 m_gshhs_h('patch',[0.7 0.7 0.7]);

@@ -1,21 +1,23 @@
 {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang2057{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fswiss\fprq2\fcharset0 Calibri;}{\f2\fnil\fcharset0 Courier New;}}
 {\*\generator Riched20 10.0.17134}\viewkind4\uc1 
 \pard\b\f0\fs22 GCOMS2 Forcing Generation\par
-\b0\f1\lang1033  <DOMNAM>= e.g. BLZE12 \par
+\b0\f1\lang1033  GTHI35 = e.g. BLZE12 \par
 Replace all in this doc for cut-and-paste\f0\lang2057\par
+\par
+Climate forced version\par
 \par
 ---------------------------------------------------------------------------------------------------------------\par
 \b Window 1: livljobs6\b0\par
 \par
-\f1\lang1033 export DOMNAM=BLZE12\f0\lang2057\par
+\f1\lang1033 export DOMNAM=GTHI35\f0\lang2057\par
 
 \pard\widctlpar\sl252\slmult1\f1\lang1033 export CONFIG=GCOMS1k\par
 export WORK=/work/$USER/\par
 export WDIR=/projectsa/accord/$CONFIG\par
 
-\pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 export INPUTS=$WDIR/INPUTS\par
+\pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 export INPUTS=$WDIR/INPUTS_RC/\par
 export  OUTPUTS=$WDIR/OUTPUTS\par
-export INPUTS_ARCH=/work/n01/n01/$USER/$CONFIG/INPUTS/\par
+export INPUTS_ARCH=/work/n01/n01/$USER/$CONFIG/INPUTS_RC/\par
 export CDIR_ARCH=/work/n01/n01/$USER/$CONFIG/trunk_NEMOGCM_r8395/CONFIG\par
 export TEMPLATES=$INPUTS/TEMPLATES\par
 \lang2057 export GitTEMPLATES=$WORK/Git/GCOMS1k/STARTFILES/TEMPLATES/\lang1033\par
@@ -23,6 +25,7 @@ export TEMPLATES=$INPUTS/TEMPLATES\par
 \pard\f0\lang2057 export ORCA0083=$WDIR/DATA_SOURCES/ORCA0083\par
 
 \pard\widctlpar\sl252\slmult1\f1 export JASMINDIR=$WORK/JASMIN/\par
+export $NOCS=$WORK/NOCS/\par
 
 \pard\f0\par
 ln -s $\f1 GitTEMPLATES $TEMPLATES\f0\par
@@ -33,39 +36,6 @@ ssh-add ~/.ssh/id_rsa\f0\lang2057\par
 
 \pard ---------------------------------------------------------------------------------------------------------------\par
 \b Tides\b0\par
-
-\pard\widctlpar\sl252\slmult1\f1\lang1033 cd $WORK/nrct/Python\par
-git checkout Generalise-tide-input\par
-vi  $WORK/nrct/Python/pynemo/tide/nemo_bdy_tide3.py\par
-\par
-module load anaconda/2.1.0  # Want python2\par
-source activate new_env\par
-export LD_LIBRARY_PATH=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/lib/amd64/server:$LD_LIBRARY_PATH\par
-python setup.py build\par
-export PYTHONPATH=/login/$USER/.conda/envs/new_env/lib/python2.7/site-packages/:$PYTHONPATH\par
-python setup.py install --prefix ~/.conda/envs/new_env\par
----------------------------------------------------------------------\par
-cd $INPUTS/$DOMNAM\par
-ln -s $DOMNAM\\_bathy_meter.nc bathy_meter.nc \par
-ln -s $DOMNAM\\_domain_cfg.nc domain_cfg.nc \par
-ln -s $ORCA0083/mesh_hgr.nc  .\par
-ln -s $ORCA0083/mesh_zgr_renamed.nc  .\par
-ln -s $ORCA0083/mask.nc  .\par
-\par
-
-\pard\f0\lang2057 cp \f1\lang1033 $TEMPLATES/local_inputs_feb.ncml  .\par
-\f0\lang2057 cp \f1\lang1033 $TEMPLATES/inputs_dst.ncml .\f0\lang2057\par
-cat $TEMPLATES/namelist.bdy_fes | sed  "s,__DESTDIR__,$INPUTS/$DOMNAM/,g"  | sed  "s,__DOMNAM__,$DOMNAM,g"   > namelist.bdy\par
-\par
-mkdir -p $INPUTS/$DOMNAM/bdydta/FES_Tides/\par
-
-\pard\widctlpar\sl252\slmult1\f1\lang1033 pynemo -s namelist.bdy\par
-\par
-
-\pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 ssh  login.archer.ac.uk mkdir -p $INPUTS_ARCH/$DOMNAM/bdydta/FES_Tides/\par
-rsync  -uvt   $INPUTS/$DOMNAM/bdydta/FES_Tides/*.nc  login.archer.ac.uk:$INPUTS_ARCH/$DOMNAM/bdydta/FES_Tides/\par
-
-\pard\f0\lang2057\par
 ---------------------------------------------------------------------------------------------------------------\par
 ---------------------------------------------------------------------------------------------------------------\par
 \b Initial Conditions (can do while tides are running)\par
@@ -80,9 +50,9 @@ addpath('/work/jholt/Git/GCOMS1k/STARTFILES/Generate_Domains/Mfiles/');\f0\lang2
 \pard environment\par
 
 \pard\widctlpar\sl252\slmult1\f1\lang1033 Edit and run \par
-edit make_initialcondition\par
+edit make_initialcondition_rc.m\par
 -----------------------------------------------------------------\par
-DOMNAM=BLZE12_C1\par
+DOMNAM=GTHI35\par
 
 \pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 rsync  -uvt   $INPUTS/$DOMNAM/$DOMNAM*IC*.nc  login.archer.ac.uk:$INPUTS_ARCH/$DOMNAM\par
 
@@ -90,23 +60,14 @@ DOMNAM=BLZE12_C1\par
 \b0 ---------------------------------------------------------------------------------------------------------------\b\par
 3D baroclinic: Livljobs6\par
 \b0 ------------------------------------------------------------------\par
-\b Access ORCA0083 data\par
+\b Access ROAM  ORCA025\par
 \b0 sshfs on LIVLJOBS6 (requires NOCL to add to fuse group)\b\par
+\b0\par
 
-\pard\widctlpar\sl252\slmult1\b0\f1 exec ssh-agent $SHELL\par
-ssh-add ~/.ssh/id_rsa_jasmin\par
+\pard\widctlpar\sl252\slmult1\f1 sshfs $USER@thalassa.noc.soton.ac.uk:/noc/msm/scratch/medusa/axy/ROAM/ ROAM -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\f0\par
 
-\pard\f0\par
-
-\pard\widctlpar\sl252\slmult1\f1 sshfs $USER@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol1/ORCA0083-N006/means/   $JASMINDIR/NEMO-ORCA0083-N006/  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
-sshfs $USER@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol2/ORCA0083-N006/medusa/ $JASMINDIR/NEMO-ORCA0083-N006-2013_2015/  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
-sshfs $USER@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol5/jdha/ORCA0083-N006-fix/means/ $JASMINDIR/NEMO-ORCA0083-N006-fix-2013  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
-
-\pard\f0\par
-#To unmount:\par
-fusermount -u \f1 $JASMINDIR/NEMO-ORCA0083-N006/  \par
-\f0 fusermount -u \f1 $JASMINDIR/NEMO-ORCA0083-N006-2013_2015/  \par
-\f0 fusermount -u \f1 $JASMINDIR/NEMO-ORCA0083-N006-fix-2013/\par
+\pard #To unmount:\par
+fusermount -u \f1 $NOCS/ROAM/  \par
 \f0\par
 ------------------------------------------------------------------\par
 Get correct pynemo version\par
@@ -114,9 +75,8 @@ Get correct pynemo version\par
 \pard\widctlpar\sl252\slmult1\f1\lang1033 module load anaconda/2.1.0  # Want python2\par
 source activate new_env\par
 export LD_LIBRARY_PATH=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/lib/amd64/server:$LD_LIBRARY_PATH\par
-export PYTHONPATH=/login/$USER/.conda/envs/new_env/lib/python2.7/site-packages/:$PYTHONPATH\par
 \par
-cd $WORK/nrct/Python\par
+cd $WORK/$USER/nrct/Python\par
 #if needed to restore before switching branches\par
 #cd pynemo/tide/\par
 #git checkout nemo_bdy_tide3.py\par
@@ -134,7 +94,7 @@ cd $INP\f0\lang2057 UTS/$DOMNAM\par
 export LD_LIBRARY_PATH=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/lib/amd64/server:$LD_LIBRARY_PATH\par
 \f0\lang2057\par
 
-\pard #for individual months to 1 year\par
+\pard for individual months to 1 year\par
 export YEAR=1995\par
 export MNTH_START=01\par
 export MNTH_STOP=12\par
@@ -149,7 +109,7 @@ cat $TEMPLATES/namelist.bdy_template  \\\par
 \f1\lang1033 pynemo -s namelist.bdy\f0\lang2057\par
 --------\par
 for many years:\par
-\f1\lang1033 $TEMPLATES/\f0\lang2057 run_pynemo_years.scr 1996 2012\par
+\f1\lang1033 $TEMPLATES/\f0\lang2057 run_pynemo_years.scr 1995 2012\par
 --------\par
 mv bdydta/coordinates.bdy.nc bdydta/$DOMNAM\\_coordinates.bdy.nc \par
 \f1\lang1033 rsync  -uvt   $INPUTS/$DOMNAM/bdydta/*.nc  login.archer.ac.uk:$INPUTS_ARCH/$DOMNAM/bdydta/\f0\lang2057\par
@@ -160,10 +120,10 @@ mv bdydta/coordinates.bdy.nc bdydta/$DOMNAM\\_coordinates.bdy.nc \par
 
 \pard\f0 export  YEARSTART=1995\par
 export YEARSTOP=2015\par
-export  LONMIN=115\par
-export  LONMAX=132\par
-export  LATMIN=28\par
-export  LATMAX=44\par
+export  LONMIN=98\par
+export  LONMAX=109\par
+export  LATMIN=5\par
+export  LATMAX=13.7\par
 \b\par
 \b0 cat $TEMPLATES/OFFICIAL_Generate_NEMO_Forcing_NEWERA.py_template  \\\par
 | sed  "s,__YEARSTART__,$YEARSTART,g" \\\par
@@ -177,7 +137,7 @@ export  LATMAX=44\par
 
 \pard\widctlpar\sl252\slmult1\b0\f1\lang1033 module load nco/gcc/4.4.2.ncwa\par
 module load anaconda/2.1.0\par
-python OFFICIAL_Generate_NEMO_Forcing_NEWERA.py   # doesnt work on livljobs8\par
+python OFFICIAL_Generate_NEMO_Forcing_NEWERA.py\par
 \par
 ssh login.archer.ac.uk mkdir $INPUTS_ARCH/$DOMNAM/metdta/\par
 \par
@@ -195,16 +155,9 @@ export TEMPLATES=$INPUTS/TEMPLATES\par
 export CDIR=$WDIR//trunk_NEMOGCM_r8395/CONFIG\par
 
 \pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 export TDIR=$WDIR//trunk_NEMOGCM_r8395/TOOLS\par
-export DOMNAM=BLZE12_C1\par
+export DOMNAM=GTHI35\par
 
 \pard\f0\lang2057 export  YEARSTART=1995\par
-\par
-#need to make INPUTS/TEMPLATES directory in install.\par
-#contains:\par
-#domain_namelist_cfg\par
-#namelist_reshape_bicubic_atmos_template\par
-#namelist_reshape_bilin_atmos_template\par
-\par
 \par
 cd $INPUTS/$DOMNAM\par
 -----------------------------------------------------------------\par
@@ -224,7 +177,7 @@ ln  -s  $DOMNAM\\_coordinates.nc coordinates.nc\par
 \lang1033\par
 export PATH=$PATH:\lang9 $TDIR/WEIGHTS/\par
 \lang1033 rm remap_nemo_grid_atmos.nc  remap_data_grid_atmos.nc data_nemo_bilin_atmos.nc\par
-#rm metdta/weight*\par
+rm metdta/weight*\par
 scripgrid.exe  namelist_reshape_bilin_atmos\par
 scrip.exe      namelist_reshape_bilin_atmos\par
 scripshape.exe namelist_reshape_bilin_atmos\par

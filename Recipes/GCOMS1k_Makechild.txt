@@ -1,0 +1,141 @@
+export DOMNAM=BLZE12
+export PRNT_DOMNAM=BLZE12
+export DOMNAM=$DOMNAM\_C1
+export CONFIG=GCOMS1k
+export WORK=/work/$USER
+export WDIR=/projectsa/accord/$CONFIG
+export INPUTS=$WDIR/INPUTS
+export  OUTPUTS=$WDIR/OUTPUTS
+export INPUTS_ARCH=/work/n01/n01/$USER/$CONFIG/INPUTS/
+export CDIR_ARCH=/work/n01/n01/$USER/$CONFIG/trunk_NEMOGCM_r8395/CONFIG
+export PRNT_DOMPATH=$INPUTS/$PRNT_DOMNAM
+export DOMPATH=$INPUTS/$DOMNAM
+export ORCA0083=$WDIR/DATA_SOURCES/ORCA0083
+export TEMPLATES=$INPUTS/TEMPLATES
+
+mkdir -p $INPUTS/$DOMNAM
+
+exec ssh-agent $SHELL 
+ssh-add ~/.ssh/id_rsa
+
+imin=39
+imax=80
+jmin=182
+jmax=230
+
+module load nco/gcc/4.4.2
+cd $WDIR/INPUTS
+
+for FILE in coordinates bathy_meter domain_cfg 
+do
+ncks -d x,$imin,$imax -d y,$jmin,$jmax $PRNT_DOMPATH/$PRNT_DOMNAM\_$FILE\.nc $CHLD_DOMPATH/$DOMNAM\_$FILE\.nc 
+done
+
+for FILE in rivertest_v1 IC_v1_ORCA0083-N06_1995
+do
+ncks -d lon,$imin,$imax -d lat,$jmin,$jmax $PRNT_DOMPATH/$PRNT_DOMNAM\_$FILE\.nc $DOMPATH/$DOMNAM\_$FILE\.nc 
+done
+ncap2 -O -s 'jpiglo=42; jpjglo=49' BLZE12_C1_domain_cfg.nc BLZE12_C1_domain_cfg.nc
+
+#Tides
+run Tides pynemo recipe
+##################################
+Open BC's
+module load anaconda/2.1.0  # Want python2
+source activate new_env
+
+git checkout  ORCA0083
+git pull
+
+cd $INPUTS/$DOMNAM
+export PYTHONPATH=/login/$USER/.conda/envs/new_env/lib/python2.7/site-packages/:$PYTHONPATH
+export LD_LIBRARY_PATH=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/lib/amd64/server:$LD_LIBRARY_PATH
+
+#for individual months to 1 year
+export YEAR=2015
+export MNTH_START=01
+export MNTH_STOP=12
+
+cat $TEMPLATES/namelist.bdy_template  \
+| sed  "s,__YEAR__,$YEAR,g" \
+| sed  "s,__DOMNAM__,$DOMNAM,g"   \
+|sed   "s,__MNTH_START__,$MNTH_START,g" \
+|sed   "s,__MNTH_STOP__,$MNTH_STOP,g" \
+> namelist.bdy
+module load nco/gcc/4.4.2
+ ncrename -v e3t_0,e3t -v e3u_0,e3u -v e3v_0,e3v -v e3w_0,e3w -v gdept_0,gdept -v gdepw_0,gdepw -v gdept_1d,gdept_0 -v gdepw_1d,gdepw_0 -v e3t_1d,e3t_0 -v e3w_1d,e3w_0 $INPUTS/$PRNT_DOMNAM/domain_cfg.nc mesh_zgr_renamed.nc
+take mask file form run of parent model
+
+pynemo -s namelist.bdy
+
+
+
+#
+#
+cd $INPUTS/$DOMNAM
+ssh login.archer.ac.uk mkdir $INPUTS_ARCH/$DOMNAM
+scp $DOMNAM*.nc login.archer.ac.uk:$INPUTS_ARCH/$DOMNAM
+
+On archer: run  Atmos weights file recipe (no need to reextract data)
+with :
+export PRNT_DOMNAM=BLZE12
+ ln -s $INPUTS/$PRNT_DOMNAM/metdta  $INPUTS/$DOMNAM/metdta
+
+#
+---------
+#Compile on  on docker 
+
+ docker run -v C:\Users\jholt\work\NEMO-Docker\SRC:/SRC -t -i nemo/compiler /bin/bash
+
+
+
+----------
+#Run on windsows 10 docker
+https://github.com/jpolton/Belize/blob/master/Level-1:-Get-and-Build-Docker-Container-and-NEMO-Met-Surge-Config.md 
+in windows powershell shell
+
+$CONFIG="GCOMS1k"
+$DOMNAM="BLZE12_C1"
+$EXPNUM="01L"
+$WDIR="C:\Users\jholt\work\NEMO-Docker\SRC\"
+$INPUTS=$WDIR + "\INPUTS\" + $DOMNAM +"\"
+$TEMPLATES=$INPUTS + "\TEMPLATES\"
+$CDIR=$WDIR + "\trunk_NEMOGCM_r8395\CONFIG\"
+$TDIR=$WDIR + "\\trunk_NEMOGCM_r8395\TOOLS\"
+$EXP=$CDIR + $CONFIG + "\" +  $DOMNAM + "_" + $EXPNUM
+$TMPLD=$CDIR + $CONFIG + "GCOMS1k_templates\"
+$STARTYEAR="1995"
+
+
+mkdir $INPUTS
+cd  $INPUTS
+cp -r \\store\projectsa\accord\GCOMS1k\INPUTS\BLZE12_C1\* .
+mkdir $EXP
+cd $EXP
+
+cp  \\store\work/NEMO/GCOMS1k/trunk_NEMOGCM_r8395/CONFIG/GCOMS1k/BLZE12_C1_01L\* .
+
+rm *1d*
+rm *1h*
+
+
+mkdir bdydta
+mkdir metdta
+cp -r $INPUTS/bdydta/*   bdydta
+cp -r $INPUTS/metdta/*   metdta
+
+
+
+
+$r1 =  $INPUTS + $DOMNAM +"_IC_v1_ORCA0083-N06_" + $STARTYEAR + "0105d05T.nc"
+cp $r1 initcd_votemper.nc
+cp $r1 initcd_vosaline.nc
+$r2 = "bdydta/" + $DOMNAM +"_coordinates.bdy.nc" 
+cp $r2 coordinates.bdy.nc
+$r3 = $DOMNAM +"_domain_cfg.nc" 
+cp $INPUTS/BLZE12_C1_domain_cfg2.nc domain_cfg.nc  
+
+cp $INPUTS/BLZE12_C1_rivertest_v1.nc runoff.nc
+
+cp $CDIR/$CONFIG/BLD/bin/nemo.exe opa
+cp \\store\work\Git\GCOMS1k\GCOMS1k_templates\namelist_ref .

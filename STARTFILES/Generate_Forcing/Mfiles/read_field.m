@@ -28,9 +28,13 @@ fname_v=[domain_outpath '/' DOMNAM '_' EXPNUM '/' YEAR '/' DOMNAM RUNNAM '_' OUT
 
 var='sss';
 %eval([var '= ncread(fname,\''  var '\');' ]);
+if (TS)
 thetao=ncread(fname_t,'thetao'); 
 soce=ncread(fname_t,'soce');
+end
+if (SSH)
 ssh=ncread(fname_t,'zos');
+end
 if (UV)
 uoce=ncread(fname_u,'uoce');
 voce=ncread(fname_v,'voce');

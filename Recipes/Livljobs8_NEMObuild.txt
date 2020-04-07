@@ -1,0 +1,45 @@
+#on livljobs8
+
+export CONFIG=GCOMS1k
+export WORK=/work/$USER
+export WDIR=$WORK/NEMO/$CONFIG
+export INPUTS=$WDIR/INPUTS
+export START_FILES=$WDIR/START_FILES
+export CDIR=$WDIR/trunk_NEMOGCM_r8395/CONFIG
+export TDIR=$WDIR/trunk_NEMOGCM_r8395/TOOLS
+export GIT=$WORK/Git/
+export TMPLD=$CDIR/$CONFIG/GCOMS1k_templates
+
+
+module load intel_compiler/17.0.4
+module load zlib/1.2.11-intel17.0.4
+module load openmpi/1.8.1-intel17.0.4
+module load hdf5/1.8.18-intel17.0.4
+module load netcdf/4.4.1.1-intel17.0.4
+module load hdf5/1.8.18-intel17.0.4-parallel
+module load netcdf/4.4.1.1-intel17.0.4-parallel
+
+cd $WDIR
+svn co http://forge.ipsl.jussieu.fr/nemo/svn/trunk/NEMOGCM@8395 trunk_NEMOGCM_r8395
+cp $GIT/$CONFIG/ARCH/* $CDIR/../ARCH/
+
+
+----
+XIOS
+cd $WORK
+svn co -r1242 http://forge.ipsl.jussieu.fr/ioserver/svn/XIOS/trunk xios-2.0_r1242
+cd $WORK/xios-2.0_r1242
+cp $GIT/$CONFIG/ARCH/arch-XC_ARCHER_INTEL_LIVL.fcm arch/.
+./make_xios --full --prod --arch XC_ARCHER_INTEL_LIVL --netcdf_lib netcdf4_par 
+#this doesnt work
+
+----
+
+cd $CDIR
+cp $GIT/$CONFIG/GCOMS1k_templates/cpp_$CONFIG.fcm $CDIR/$CONFIG
+rmdir  $CDIR/$CONFIG/MY_SRC
+ln -s  $GIT/$CONFIG/MY_SRC $CDIR/$CONFIG/MY_SRC
+ln -s  $GIT/$CONFIG/GCOMS1k_templates $CDIR/$CONFIG/GCOMS1k_templates
+
+./makenemo -n $CONFIG -m XC_ARCHER_INTEL_LIVL clean
+./makenemo -n $CONFIG -m XC_ARCHER_INTEL_LIVL 
