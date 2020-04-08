@@ -75,7 +75,7 @@
    !
    cn_dir        = './'     !  root directory for the location of the runoff files
    ln_tsd_init   = .true.   !  Initialisation of ocean T & S with T &S input data (T) or not (F)
-   ln_tsd_tradmp = .false.   !  damping of ocean T & S toward T &S input data (T) or not (F)
+   ln_tsd_dmp = .false.   !  damping of ocean T & S toward T &S input data (T) or not (F)
 /
 !-----------------------------------------------------------------------
 &namwad        !   Wetting and drying                                   (default F)
@@ -258,11 +258,11 @@ rn_wdmin2=0.1,
    !___________!_________________________!___________________!___________!_____________!________!___________!__________________!__________!_______________!
    !           !  file name              ! frequency (hours) ! variable  ! time interp.!  clim  ! 'yearly'/ ! weights filename ! rotation ! land/sea mask !
    !           !                         !  (if <0  months)  !   name    !   (logical) !  (T/F) ! 'monthly' !                  ! pairing  !    filename   !
-   sn_rnf      = 'rivers'                ,        -1         , 'rorunoff',   .false.   , .true. , 'yearly'  , ''               , ''       , ''
+   sn_rnf      = 'runoff'                ,        -1         , 'rorunoff',   .false.   , .true. , 'yearly'  , ''               , ''       , ''
    sn_cnf      = 'runoff_1m_nomask'      ,         0         , 'socoefr0',   .false.   , .true. , 'yearly'  , ''               , ''       , ''
-   sn_s_rnf    = 'rivers'                ,        24         , 'rosaline',   .false.   , .true. , 'yearly'  , ''               , ''       , ''
-   sn_t_rnf    = 'rivers'                ,        24         , 'rotemper',   .false.   , .true. , 'yearly'  , ''               , ''       , ''
-   sn_dep_rnf  = 'rivers'                ,         0         , 'rodepth' ,   .false.   , .true. , 'yearly'  , ''               , ''       , ''
+   sn_s_rnf    = 'runoff'                ,        24         , 'rosaline',   .false.   , .true. , 'yearly'  , ''               , ''       , ''
+   sn_t_rnf    = 'runoff'                ,        24         , 'rotemper',   .false.   , .true. , 'yearly'  , ''               , ''       , ''
+   sn_dep_rnf  = 'runoff'                ,         0         , 'rodepth' ,   .false.   , .true. , 'yearly'  , ''               , ''       , ''
 /
 !-----------------------------------------------------------------------
 &namsbc_apr    !   Atmospheric pressure used as ocean forcing           (ln_apr_dyn =T)
@@ -341,8 +341,8 @@ rn_wdmin2=0.1,
     nn_rimwidth   =  9                       !  width of the relaxation zone
     ln_vol        = .false.                  !  total volume correction (see nn_volctl parameter)
     nn_volctl     = 1                        !  = 0, the total water flux across open boundaries is zero
-!jth forinterpolation
-    nb_jpk_bdy    = 75                    ! number of levels in the bdy data (set < 0 if consistent with planned run)
+!jth is this needed for interpolation
+!    nb_jpk_bdy    = 75                    ! number of levels in the bdy data (set < 0 if consistent with planned run)
 /
 !-----------------------------------------------------------------------
 &nambdy_dta    !  open boundaries - external data                       
@@ -442,9 +442,7 @@ rn_wdmin2=0.1,
    !                       !  Coefficients:
    nn_aht_ijk_t    = 0         !  =  0   constant = 1/2  Ud*Ld   (lap case) 
       rn_Ud        = 0.01           !  lateral diffusive velocity [m/s] (nn_aht_ijk_t= 0, 10, 20, 30)
-      rn_Ld        = 10.e+3         !  lateral diffusive length   [m]   (nn_aht_ijk_t= 0, 10)
-   rn_aht_0        = 25. !125.     !jth check stilled  lateral eddy diffusivity   (lap. operator) [m2/s]
-   rn_bht_0        = 1.e+12    !  lateral eddy diffusivity (bilap. operator) [m4/s]
+      rn_Ld        = 5.e+3         !  lateral diffusive length   [m]   (nn_aht_ijk_t= 0, 10)
 /
 !!======================================================================
 !!                      ***  Dynamics namelists  ***                  !!
@@ -500,12 +498,11 @@ rn_wdmin2=0.1,
    ln_dynldf_blp =  .true.     !  bilaplacian operator
    ln_dynldf_lev =  .true.     !  iso-level
    nn_ahm_ijk_t  = 0          !  =0   constant = 1/12 Uv*Lv^3 (blp case)
-      rn_Uv      =  0.012      !  lateral viscous velocity [m/s]
-!      rn_Uv      =  0.001      !  lateral viscous velocity [m/s]
-      rn_Lv      = 10.e+3      !  lateral viscous length   [m]  
+!      rn_Uv      =  0.012      !  lateral viscous velocity [m/s]
+      rn_Uv      =  0.00016      !  lateral viscous velocity [m/s]
+      rn_Lv      = 5.e+3      !  lateral viscous length   [m]  
       rn_csmc    = 2           !  Smagorinsky constant of proportionality  
       rn_minfac  =  1.e-3      !  multiplier of theorectical lower limit 
-      rn_bhm_0      = -1.e+7    !jth check stilled  !  horizontal bilaplacian eddy viscosity [m4/s]
 /
 !!======================================================================
 !!                     vertical physics namelists                     !!
