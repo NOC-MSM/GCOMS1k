@@ -1,6 +1,6 @@
 {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang2057{\fonttbl{\f0\fnil\fcharset0 Courier New;}{\f1\fnil\fcharset0 Calibri;}{\f2\fswiss\fprq2\fcharset0 Calibri;}}
 {\colortbl ;\red0\green0\blue255;}
-{\*\generator Riched20 10.0.17763}\viewkind4\uc1 
+{\*\generator Riched20 10.0.17134}\viewkind4\uc1 
 \pard\b\f0\fs22 GCOMS1k Install\par
 \b0\f1 -----------------------------------------------------------------------------------------------------------------------------------\par
 \b Setup on Archer\par
@@ -71,7 +71,7 @@ cd $CDIR\par
 \b\f1\lang9 Install NEMO tools \lang2057 on Archer\par
 
 \pard\sl240\slmult1\b0\lang9\par
-export PATCHES=$GIT/$CONFIG/STARTFILES/PATCHES\par
+export $PATCHES=$GIT/$CONFIG/STARTFILES/PATCHES\par
 cd $TDIR/WEIGHTS/src\par
 patch -b < $PATCHES/scripinterp_mod.patch\par
 patch -b < $PATCHES/scripinterp.patch\par
@@ -83,70 +83,6 @@ cd $TDIR\par
 ./maketools -m XC_ARCHER_INTEL_XIOS1 -n DOMAINcfg\par
 ./maketools -m XC_ARCHER_INTEL_XIOS1 -n REBUILD_NEMO\par
 ./maketools -m XC_ARCHER_INTEL_XIOS1 -n WEIGHTS\par
-
-\pard\b\par
-\par
-------------------------------------------------------------------------------------------------------------------------------------\par
-Install NEMO tools \lang2057 on LIVLJOBS7\par
-
-\pard\sl240\slmult1\b0\lang9 module load intel_compiler/17.0.4\par
-module load zlib/1.2.11-intel17.0.4\par
-module load openmpi/1.8.1-intel17.0.4\par
-module load hdf5/1.8.18-intel17.0.4\par
-module load netcdf/4.4.1.1-intel17.0.4\par
-module load hdf5/1.8.18-intel17.0.4-parallel\par
-module load netcdf/4.4.1.1-intel17.0.4-parallel\par
-\par
-
-\pard\lang2057 -----------------------------------------------------------------------------------------------------------------------------------\lang9\par
-
-\pard\sl240\slmult1 export CONFIG=GCOMS1k\par
-export WORK=/work/$USER\par
-export WDIR=$WORK/NEMO/$CONFIG\par
-export INPUTS=$WDIR/INPUTS\par
-export START_FILES=$WDIR/START_FILES\par
-export CDIR=$WDIR/trunk_NEMOGCM_r8395/CONFIG\par
-export TDIR=$WDIR/trunk_NEMOGCM_r8395/TOOLS\par
-export GIT=$WORK/Git/\par
-export TMPLD=$CDIR/$CONFIG/GCOMS1k_templates\par
-
-\pard\lang2057 -----------------------------------------------------------------------------------------------------------------------------------\f0\par
-\b\f1\lang9 XIOS-1\par
-\b0 cd $WORK\par
-module load intel_compiler/17.0.4\par
-svn co -r703 {{\field{\*\fldinst{HYPERLINK http://forge.ipsl.jussieu.fr/ioserver/svn/XIOS/trunk }}{\fldrslt{http://forge.ipsl.jussieu.fr/ioserver/svn/XIOS/trunk\ul0\cf0}}}}\f1\fs22  xios-1.0_r703\par
-cd $WORK/xios-1.0_r703\par
-cp $GIT/$CONFIG/ARCH/arch-XC_ARCHER_INTEL_LIVL.fcm arch/.\par
-./make_xios --full --prod --arch XC_ARCHER_INTEL_LIVL --netcdf_lib netcdf4_par \par
-
-\pard\sl240\slmult1\par
-\par
-\par
-\par
-\par
-cd $WDIR\par
-svn co {{\field{\*\fldinst{HYPERLINK http://forge.ipsl.jussieu.fr/nemo/svn/trunk/NEMOGCM@8395 }}{\fldrslt{http://forge.ipsl.jussieu.fr/nemo/svn/trunk/NEMOGCM@8395\ul0\cf0}}}}\f1\fs22  trunk_NEMOGCM_r8395\par
-cp $GIT/$CONFIG/ARCH/* $CDIR/../ARCH/\par
-\par
-export PATCHES=$GIT/$CONFIG/STARTFILES/PATCHES\par
-cd $TDIR/WEIGHTS/src\par
-patch -b < $PATCHES/scripinterp_mod.patch\par
-patch -b < $PATCHES/scripinterp.patch\par
-patch -b < $PATCHES/scrip.patch\par
-patch -b < $PATCHES/scripshape.patch\par
-patch -b < $PATCHES/scripgrid.patch\par
-# This doesnt work so copy patched versions from ARCHER \par
-
-\pard\sl276\slmult1 export TDIR_ARCH=/work/n01/n01/jholt/$CONFIG/trunk_NEMOGCM_r8395/TOOLS\par
-
-\pard\sl240\slmult1 scp login.archer.ac.uk:$TDIR_ARCH/WEIGHTS/src/* .\par
-\par
-cd $TDIR\par
-\par
-./maketools -m XC_ARCHER_INTEL_LIVL  -n DOMAINcfg\par
-./maketools -m XC_ARCHER_INTEL_XIOS1 -n REBUILD_NEMO\par
-./maketools -m XC_ARCHER_INTEL_XIOS1 -n WEIGHTS\par
-\par
 \lang2057\par
 
 \pard -----------------------------------------------------------------------------------------------------------------------------------\f0\par
@@ -217,6 +153,21 @@ fusermount -u \f2 $JASMINDIR/NEMO-ORCA0083-N006/  \par
 ncml_setup\par
 sym_link_setup-fix \par
 \par
-\f1 -----------------------------------------------------------------------------------------------------------------------------------\f0\par
+\f1 -----------------------------------------------------------------------------------------------------------------------------------\par
+
+\pard\widctlpar\sl252\slmult1\f2 #Install GridBuilder\par
+{{\field{\*\fldinst{HYPERLINK http://austides.com/wp-content/uploads/GridBuilder_web.exe }}{\fldrslt{http://austides.com/wp-content/uploads/GridBuilder_web.exe\ul0\cf0}}}}\f2\fs22  \par
+module load matlab/2016b\par
+ matlab &\par
+In matlab click on GridBuilder.mltbx\par
+#Check Add-Ons location in Preferences:\par
+~/Documents/MATLAB/Add-Ons/Toolboxes/\par
+\par
+#My hack to read GEBCO data\par
+cp ~/work/Git/GCOMS1k/STARTFILES/Generate_Domains/Mfiles/getUserBathymetry.m  ~/Documents/MATLAB/Add-Ons/Toolboxes/GridBuilder/code/Functions/\par
+
+\pard\f1\par
+\par
+----------------------------------------------------------------------------------------------------------------------------------\f0\par
 }
  

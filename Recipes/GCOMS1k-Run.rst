@@ -5,7 +5,7 @@ ssh-add ~/.ssh/id_rsa
 On ARCHER
 ---------------------------------------------------------------------------------------------------------------:: 
  export CONFIG=GCOMS1k
- export DOMNAM=GTHI35
+ export DOMNAM=SRIL34
  export EXPNUM=01
  export WORK=/work/n01/n01/$USER
  export WDIR=$WORK/$CONFIG
@@ -53,7 +53,7 @@ set y= <start year>
 m=<start month> .....Note no 0 in month
 tpd = <time steps per day> 
 
-# in monthlyrun.pbs
+# in vi 
 Set email address, DOMNAM, 
 IJ= < number of cores > = (select-1)*24
 Change file names for tidy up.
@@ -91,7 +91,7 @@ export INPUTS_ARCH=/work/n01/n01/$USER/$CONFIG/INPUTS/
 export CDIR_ARCH=/nerc/n01/n01/$USER/$CONFIG/OUTPUT/
 export EXP_ARCH=/work/n01/n01/jholt/GCOMS1k/trunk_NEMOGCM_r8395/CONFIG/$CONFIG/
 export EXPNUM=01
-export DOMNAM=GTHI35
+export DOMNAM=BLZE12_C1
 
 mkdir  -p $OUTPUTS/$DOMNAM\_$EXPNUM 
 cd $OUTPUTS/$DOMNAM\_$EXPNUM
