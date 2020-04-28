@@ -81,8 +81,8 @@
 &namwad        !   Wetting and drying                                   (default F)
 !-----------------------------------------------------------------------
 ln_wd_dl=.false.,
-ln_wd_dl_bc=.true.,
-ln_wd_dl_rmp=.true.,
+ln_wd_dl_bc=.false.,
+ln_wd_dl_rmp=.false.,
 ln_wd_il=.false.,
 nn_wdit=200,
 rn_wd_sbcdep=10.0,
@@ -425,7 +425,8 @@ rn_wdmin2=0.1,
 !-----------------------------------------------------------------------
 &nameos        !   ocean Equation Of Seawater                           (default: NO selection)
 !-----------------------------------------------------------------------
-   ln_teos10   = .true.         !  = Use TEOS-10 equation of state
+   ln_teos10   = .false.         !  = Use TEOS-10 equation of state
+   ln_eos80    = .true.          !  = Use EOS80 equation of state 
 /
 !-----------------------------------------------------------------------
 &namtra_adv    !   advection scheme for tracer                          (default: NO selection)
@@ -565,12 +566,12 @@ rn_wdmin2=0.1,
 !-----------------------------------------------------------------------
 &nam_diatmb    !  Top Middle Bottom Output                              (default F)
 !-----------------------------------------------------------------------
-   ln_diatmb  = .true.    !  Choose Top Middle and Bottom output or not
+   ln_diatmb  = .false.    !  Choose Top Middle and Bottom output or not
 /
 !-----------------------------------------------------------------------
 &nam_dia25h    !  25h Mean Output                                       (default F)
 !-----------------------------------------------------------------------
-   ln_dia25h  = .true.    ! Choose 25h mean output or not
+   ln_dia25h  = .false.    ! Choose 25h mean output or not
 /
 !!======================================================================
 !!               ***  Observation & Assimilation  ***                 !!

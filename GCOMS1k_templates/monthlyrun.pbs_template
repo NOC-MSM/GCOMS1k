@@ -152,7 +152,7 @@ while [  $yy -le $iy2 ]; do
 
       nemo_finished_ok="$(grep AAAA  ocean.output | wc -l )"
 
-      if [ $nemo_finished_ok  -ne 3 ]
+      if [ $nemo_finished_ok  -lt 3 ]
       then 
        echo NEMO did not exit ok
        exit
