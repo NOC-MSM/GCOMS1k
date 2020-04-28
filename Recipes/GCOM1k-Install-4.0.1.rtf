@@ -1,0 +1,172 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang2057{\fonttbl{\f0\fnil\fcharset0 Courier New;}{\f1\fnil\fcharset0 Calibri;}{\f2\fswiss\fprq2\fcharset0 Calibri;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Riched20 10.0.17134}\viewkind4\uc1 
+\pard\b\f0\fs22 GCOMS1k Install\par
+\b0\f1 -----------------------------------------------------------------------------------------------------------------------------------\par
+\b Setup on Archer\par
+
+\pard\sl276\slmult1\b0\lang9 ssh jholt@login.archer.ac.uk\par
+\par
+export CONFIG=GCOMS1k\par
+
+\pard\sl240\slmult1 export WORK=/work/n01/n01/$USER\par
+
+\pard\sl276\slmult1 export WDIR=$WORK/$CONFIG\par
+export INPUTS=$WDIR/INPUTS\par
+export START_FILES=$WDIR/START_FILES\par
+export CDIR=$WDIR/trunk_NEMOGCM_v4.0.1/cfgs\par
+export TDIR=$WDIR/trunk_NEMOGCM_v4.0.1/tools\par
+
+\pard\sl240\slmult1 export GIT=$WORK/Git/\par
+
+\pard\widctlpar\sl252\slmult1\lang2057 export TMPLD=\lang1033 $CDIR/$CONFIG/\lang2057 GCOMS1k_templates\lang1033\par
+
+\pard\sl240\slmult1\lang9\par
+module swap PrgEnv-cray PrgEnv-intel\par
+module unload cray-netcdf\par
+module load cray-netcdf-hdf5parallel cray-hdf5-parallel\par
+\par
+mkdir $WDIR\par
+mkdir $INPUTS\par
+mkdir $START_FILES\par
+\lang2057 mkdir $GIT\par
+\par
+
+\pard\widctlpar\sl252\slmult1\f2\lang1033 exec ssh-agent $SHELL \par
+ssh-add ~/.ssh/id_rsa\par
+
+\pard\b\f1\lang2057\par
+\b0 #cd $GIT\par
+#git clone {{\field{\*\fldinst{HYPERLINK https://github.com/NOC-MSM/GCOMS1k.git }}{\fldrslt{https://github.com/NOC-MSM/GCOMS1k.git\ul0\cf0}}}}\f1\fs22\par
+\par
+\par
+-----------------------------------------------------------------------------------------------------------------------------------\f0\par
+\b\f1\lang9 XIOS \lang2057 on Archer\par
+
+\pard\sl240\slmult1\b0\lang9\par
+better to buid properly here\par
+\par
+scp -rp /work/n01/n01/jelt/xios-2.0_r1080 /work/n01/n01/jholt/\par
+
+\pard\f0\lang2057\par
+\f1 -----------------------------------------------------------------------------------------------------------------------------------\f0\par
+\b\f1 Install NEMO on Archer\b0\f0\par
+
+\pard\sl240\slmult1\f1\lang9 cd $WDIR\par
+svn co  {{\field{\*\fldinst{HYPERLINK http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/release-4.0.1@11849 }}{\fldrslt{http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/release-4.0.1@11849\ul0\cf0}}}}\f1\fs22  trunk_NEMOGCM_v4.0.1\par
+\lang2057 #cp $GIT/$CONFIG/ARCH/* $CDIR/../arch/ not needed? Need Nico's version of xios\lang9\par
+cd $CDIR/..\par
+./makenemo -n $CONFIG -m XC_ARCHER_INTEL -j 10 clean\par
+\par
+cp $GIT/$CONFIG/GCOMS1k_templates/cpp_$CONFIG.fcm $CDIR/$CONFIG \par
+rmdir  $CDIR/$CONFIG/MY_SRC\par
+ln -s  $GIT/$CONFIG/MY_SRC_v4.0.1 $CDIR/$CONFIG/MY_SRC\par
+ln -s  $GIT/$CONFIG/\lang2057 GCOMS1k_templates\lang9  $CDIR/$CONFIG/\lang2057 GCOMS1k_templates\lang9\par
+ \par
+cd $CDIR\par
+./makenemo -n $CONFIG -m XC_ARCHER_INTEL -j 10\par
+
+\pard\lang2057 -----------------------------------------------------------------------------------------------------------------------------------\f0\par
+\b\f1\lang9 Install NEMO tools \lang2057 on Archer\par
+
+\pard\sl240\slmult1\b0\lang9\par
+export $PATCHES=$GIT/$CONFIG/STARTFILES/PATCHES\par
+cd $TDIR/WEIGHTS/src\par
+patch -b < $PATCHES/scripinterp_mod.patch\par
+patch -b < $PATCHES/scripinterp.patch\par
+patch -b < $PATCHES/scrip.patch\par
+patch -b < $PATCHES/scripshape.patch\par
+patch -b < $PATCHES/scripgrid.patch\par
+cd $TDIR\par
+\par
+./maketools -m XC_ARCHER_INTEL_XIOS1 -n DOMAINcfg\par
+./maketools -m XC_ARCHER_INTEL_XIOS1 -n REBUILD_NEMO\par
+./maketools -m XC_ARCHER_INTEL_XIOS1 -n WEIGHTS\par
+\lang2057\par
+
+\pard -----------------------------------------------------------------------------------------------------------------------------------\f0\par
+\b\f1 Install pyNEMO on livljobs6\b0\f0\par
+
+\pard\widctlpar\sl252\slmult1\f2\lang9 export WORK=/work/$USER\par
+export LD_LIBRARY_PATH=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/lib/amd64/server:$LD_LIBRARY_PATH\par
+unset SSH_ASKPASS\par
+\par
+module load anaconda/2.1.0  # Want python2\par
+conda create --name new_env scipy=0.16.0 numpy=1.9.2 matplotlib=1.4.3 basemap netcdf4 libgfortran=1.0.0 \par
+source activate new_env\par
+\par
+conda install -c {{\field{\*\fldinst{HYPERLINK https://conda.anaconda.org/conda-forge }}{\fldrslt{https://conda.anaconda.org/conda-forge\ul0\cf0}}}}\f2\fs22  seawater=3.3.4\par
+conda install -c {{\field{\*\fldinst{HYPERLINK https://conda.anaconda.org/srikanthnagella }}{\fldrslt{https://conda.anaconda.org/srikanthnagella\ul0\cf0}}}}\f2\fs22  thredds_crawler\par
+conda install -c {{\field{\*\fldinst{HYPERLINK https://conda.anaconda.org/srikanthnagella }}{\fldrslt{https://conda.anaconda.org/srikanthnagella\ul0\cf0}}}}\f2\fs22  pyjnius\par
+cd $WORK\par
+git clone {{\field{\*\fldinst{HYPERLINK https://jpolton@bitbucket.org/jdha/nrct.git }}{\fldrslt{https://jpolton@bitbucket.org/jdha/nrct.git\ul0\cf0}}}}\f2\fs22  nrct  \par
+cd $WORK/nrct/Python\par
+----------------------------\par
+To get correct branch\par
+git checkout Generalise-tide-input\par
+#git checkout ORCA0083\par
+----------------------------\par
+To up date\par
+git pull\par
+----------------------------\par
+To build\par
+python setup.py build clean\par
+python setup.py build\par
+export PYTHONPATH=/login/$USER/.conda/envs/new_env/lib/python2.7/site-packages/:$PYTHONPATH\par
+python setup.py install --prefix ~/.conda/envs/new_env\par
+
+\pard\f0\lang2057\par
+\f1 -----------------------------------------------------------------------------------------------------------------------------------\f0\par
+\b\f1 Access ORCA0083 data on livljobs6\par
+\b0 sshfs on LIVLJOBS6 (requires NOCL to add to fuse group)\b\par
+
+\pard\widctlpar\sl252\slmult1\b0\f2 exec ssh-agent $SHELL\par
+ssh-add ~/.ssh/id_rsa_jasmin\par
+\par
+export GitTEMPLATES= /work/jholt/Git/GCOMS1k/STARTFILES/TEMPLATES/\par
+export JASMINDIR=/work/jholt/JASMIN/\par
+\par
+mkdir $JASMINDIR\par
+mkdir $JASMINDIR/ncml_templates/\par
+\par
+cd $JASMINDIR\par
+mkdir NEMO-ORCA0083-N006/  \par
+mkdir NEMO-ORCA0083-N006-2013_2015/\par
+mkdir NEMO-ORCA0083-N006-fix-2013/  \par
+  \par
+cp $GitTEMPLATES/sym_link_setup-fix .\par
+cp $GitTEMPLATES/ncml_templates/* ncml_templates/\par
+cp $GitTEMPLATES/ncml_setup .\par
+\par
+sshfs jholt@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol1/ORCA0083-N006/means/   $JASMINDIR/NEMO-ORCA0083-N006/  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
+sshfs jholt@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol2/ORCA0083-N006/medusa/ $JASMINDIR/NEMO-ORCA0083-N006-2013_2015/  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
+sshfs jholt@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol5/jdha/ORCA0083-N006-fix/means/ $JASMINDIR/NEMO-ORCA0083-N006-fix-2013  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
+
+\pard\f1\par
+#To unmount:\par
+fusermount -u \f2 $JASMINDIR/NEMO-ORCA0083-N006/  \par
+\f1 fusermount -u \f2 $JASMINDIR/NEMO-ORCA0083-N006-2013_2015/  \par
+\f1 fusermount -u \f2 $JASMINDIR/NEMO-ORCA0083-N006-fix-2013/\par
+\par
+# to set up data access by ncml\par
+ncml_setup\par
+sym_link_setup-fix \par
+\par
+\f1 -----------------------------------------------------------------------------------------------------------------------------------\par
+
+\pard\widctlpar\sl252\slmult1\f2 #Install GridBuilder\par
+{{\field{\*\fldinst{HYPERLINK http://austides.com/wp-content/uploads/GridBuilder_web.exe }}{\fldrslt{http://austides.com/wp-content/uploads/GridBuilder_web.exe\ul0\cf0}}}}\f2\fs22  \par
+module load matlab/2016b\par
+ matlab &\par
+In matlab click on GridBuilder.mltbx\par
+#Check Add-Ons location in Preferences:\par
+~/Documents/MATLAB/Add-Ons/Toolboxes/\par
+\par
+#My hack to read GEBCO data\par
+cp ~/work/Git/GCOMS1k/STARTFILES/Generate_Domains/Mfiles/getUserBathymetry.m  ~/Documents/MATLAB/Add-Ons/Toolboxes/GridBuilder/code/Functions/\par
+
+\pard\f1\par
+\par
+----------------------------------------------------------------------------------------------------------------------------------\f0\par
+}
+ 
