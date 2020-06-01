@@ -75,7 +75,7 @@ cd $CDIR\par
 \b\f1\lang9 Install NEMO tools \lang2057 on Archer\par
 
 \pard\sl240\slmult1\b0\lang9\par
-export $PATCHES=$GIT/$CONFIG/STARTFILES/PATCHES\par
+export PATCHES=$GIT/$CONFIG/STARTFILES/PATCHES\par
 cd $TDIR/WEIGHTS/src\par
 patch -b < $PATCHES/scripinterp_mod.patch\par
 patch -b < $PATCHES/scripinterp.patch\par

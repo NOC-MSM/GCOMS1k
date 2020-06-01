@@ -16,7 +16,7 @@ On ARCHER
  export EXP=$CDIR/$CONFIG/$DOMNAM\_$EXPNUM 
  export EXP=$CDIR/$CONFIG/$DOMNAM\_$EXPNUM
  export TMPLD=$CDIR/$CONFIG/GCOMS1k_templates
- export STARTYEAR=1995
+ export STARTYEAR=2000
  module swap PrgEnv-cray PrgEnv-intel
  module unload cray-netcdf
  module load cray-netcdf-hdf5parallel cray-hdf5-parallel
@@ -89,9 +89,9 @@ export INPUTS=$WDIR/INPUTS
 export  OUTPUTS=/projectsa/accord/GCOMS1k/OUTPUTS/
 export INPUTS_ARCH=/work/n01/n01/$USER/$CONFIG/INPUTS/
 export CDIR_ARCH=/nerc/n01/n01/$USER/$CONFIG/OUTPUT/
-export EXP_ARCH=/work/n01/n01/jholt/GCOMS1k/trunk_NEMOGCM_r8395/CONFIG/$CONFIG/
+export EXP_ARCH=/work/n01/n01/jholt/GCOMS1k/trunk_NEMOGCM_v4.0.2/cfgs/$CONFIG/
 export EXPNUM=01
-export DOMNAM=BLZE12_C1
+export DOMNAM=LBay180
 
 mkdir  -p $OUTPUTS/$DOMNAM\_$EXPNUM 
 cd $OUTPUTS/$DOMNAM\_$EXPNUM

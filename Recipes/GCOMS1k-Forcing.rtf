@@ -7,7 +7,7 @@ Replace all in this doc for cut-and-paste\f0\lang2057\par
 ---------------------------------------------------------------------------------------------------------------\par
 \b Window 1: livljobs6\b0\par
 \par
-\f1\lang1033 export DOMNAM=BLZE12\f0\lang2057\par
+\f1\lang1033 export DOMNAM=LBay180\f0\lang2057\par
 
 \pard\widctlpar\sl252\slmult1\f1\lang1033 export CONFIG=GCOMS1k\par
 export WORK=/work/$USER/\par
@@ -40,7 +40,7 @@ vi  $WORK/nrct/Python/pynemo/tide/nemo_bdy_tide3.py\par
 \par
 module load anaconda/2.1.0  # Want python2\par
 source activate new_env\par
-export LD_LIBRARY_PATH=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/lib/amd64/server:$LD_LIBRARY_PATH\par
+export LD_LIBRARY_PATH=/usr/lib/jvm/jre-1.7.0-openjdk/lib/amd64/server:$LD_LIBRARY_PATH\par
 python setup.py build\par
 export PYTHONPATH=/login/$USER/.conda/envs/new_env/lib/python2.7/site-packages/:$PYTHONPATH\par
 python setup.py install --prefix ~/.conda/envs/new_env\par
@@ -158,12 +158,12 @@ mv bdydta/coordinates.bdy.nc bdydta/$DOMNAM\\_coordinates.bdy.nc \par
 
 \pard\widctlpar\sl252\slmult1\b0\f1\lang1033 cd $INPUTS/$DOMNAM\lang2057\par
 
-\pard\f0 export  YEARSTART=1995\par
+\pard\f0 export  YEARSTART=2000\par
 export YEARSTOP=2015\par
-export  LONMIN=115\par
-export  LONMAX=132\par
-export  LATMIN=28\par
-export  LATMAX=44\par
+export  LONMIN=-4\par
+export  LONMAX=-2.5\par
+export  LATMIN=53\par
+export  LATMAX=54\par
 \b\par
 \b0 cat $TEMPLATES/OFFICIAL_Generate_NEMO_Forcing_NEWERA.py_template  \\\par
 | sed  "s,__YEARSTART__,$YEARSTART,g" \\\par
@@ -176,7 +176,9 @@ export  LATMAX=44\par
 \b\par
 
 \pard\widctlpar\sl252\slmult1\b0\f1\lang1033 module load nco/gcc/4.4.2.ncwa\par
-module load anaconda/2.1.0\par
+#module load anaconda/2.1.0\par
+module load anaconda/3-2018_12 \par
+source activate new_env \par
 python OFFICIAL_Generate_NEMO_Forcing_NEWERA.py   # doesnt work on livljobs8\par
 \par
 ssh login.archer.ac.uk mkdir $INPUTS_ARCH/$DOMNAM/metdta/\par
@@ -192,12 +194,17 @@ export WORK=/work/n01/n01\par
 export WDIR=$WORK/$USER/$CONFIG\par
 export INPUTS=$WDIR/INPUTS\par
 export TEMPLATES=$INPUTS/TEMPLATES\par
-export CDIR=$WDIR//trunk_NEMOGCM_r8395/CONFIG\par
+#export CDIR=$WDIR//trunk_NEMOGCM_r8395/CONFIG\par
 
-\pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 export TDIR=$WDIR//trunk_NEMOGCM_r8395/TOOLS\par
-export DOMNAM=BLZE12_C1\par
+\pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 #export TDIR=$WDIR//trunk_NEMOGCM_r8395/TOOLS\par
 
-\pard\f0\lang2057 export  YEARSTART=1995\par
+\pard\widctlpar\sl252\slmult1 export CDIR=$WDIR//trunk_NEMOGCM_v4.0.2/CONFIG\par
+
+\pard\brdrb\brdrs\brdrw15\brsp20 \widctlpar\sl252\slmult1 export TDIR=$WDIR//trunk_NEMOGCM_v4.0.2/TOOLS\par
+\par
+export DOMNAM=LBay180\par
+
+\pard\f0\lang2057 export  YEARSTART=2000\par
 \par
 #need to make INPUTS/TEMPLATES directory in install.\par
 #contains:\par
