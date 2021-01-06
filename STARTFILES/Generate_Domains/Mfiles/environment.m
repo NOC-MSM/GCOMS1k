@@ -4,7 +4,7 @@ git_path='/work/jholt/Git/GCOMS1k/STARTFILES/';
 projects_path='/projectsa/accord/GCOMS1k/';
 
 %git_path='C:\Users\jholt\Documents\GitHub\GCOMS1k\STARTFILES\';
-%projects_path='C:\Users\jholt\Documents\Projects\';
+projects_path='C:\Users\jholt\Documents\Projects\ACCORD\NEMO_Grid\';
 
 addpath([git_path 'Global_Rivers/Mfiles/']);
 
