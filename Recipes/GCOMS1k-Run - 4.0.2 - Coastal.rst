@@ -11,8 +11,8 @@ On ARCHER
  export WDIR=$WORK/DOMNAM
  export INPUTS=$WDIR/INPUTS
  export TEMPLATES=$INPUTS/TEMPLATES
- export CDIR=$WDIR/trunk_NEMOGCM_v4.0.1/cfgs
- export TDIR=$WDIR//trunk_NEMOGCM_v4.0.1/tools
+ export CDIR=$WDIR/trunk_NEMOGCM_v4.0.2/cfgs
+ export TDIR=$WDIR//trunk_NEMOGCM_v4.0.2/tools
  export EXP=$CDIR/$CONFIG/$DOMNAM\_$EXPNUM 
  export EXP=$CDIR/$CONFIG/$DOMNAM\_$EXPNUM
  export TMPLD=$CDIR/$CONFIG/GCOMS1k_templates
@@ -37,8 +37,8 @@ ln -s $INPUTS/$DOMNAM/$DOMNAM\_domain_cfg.nc domain_cfg.nc
 ln -s $INPUTS/$DOMNAM/$DOMNAM\_rivertest_v3.nc runoff.nc
 mkdir rst
 cp $TMPLD/*.xml .
-ln -s  $TMPLD/namelist_ref_v4.0.1 namelist_ref
-cat $TMPLD/namelist_cfg_domain_v4.0.1 | sed  "s,__STARTDATE__,$STARTYEAR,g"  | sed  "s,__DOMNAM__,$DOMNAM,g"   > namelist_cfg_template
+ln -s  $TMPLD/namelist_ref_v4.0.2 namelist_ref
+cat $TMPLD/namelist_cfg_domain_v4.0.2 | sed  "s,__STARTDATE__,$STARTYEAR,g"  | sed  "s,__DOMNAM__,$DOMNAM,g"   > namelist_cfg_template
 cp $TMPLD/monthlyrun*.pbd .
 cat $TMPLD/monthlyrun.pbs_template  | sed  "s,__DOMNAM__,$DOMNAM,g" > monthlyrun.pbs  
 cp $TMPLD/run_nemo.sh  .
