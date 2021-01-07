@@ -2,6 +2,7 @@ grid_path=[projects_path '/Grid_files/'];
 grid_name='';
 flipit=0;
 %DOMNAM='GCOMS1k_LME_12_BLZE';
+%DOMNAM='GULF32_2k'
 grid_name=[DOMNAM '_Grid.mat'];
 
 land_value=0%-10;
