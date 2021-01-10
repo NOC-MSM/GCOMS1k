@@ -1,177 +1,404 @@
-{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang2057{\fonttbl{\f0\fnil\fcharset0 Courier New;}{\f1\fnil\fcharset0 Calibri;}{\f2\fswiss\fprq2\fcharset0 Calibri;}{\f3\froman\fprq2\fcharset0 Times New Roman;}}
-{\colortbl ;\red0\green0\blue255;\red0\green0\blue0;}
-{\*\generator Riched20 10.0.18362}\viewkind4\uc1 
-\pard\b\f0\fs22 GCOMS1k Install\par
-\b0\f1 -----------------------------------------------------------------------------------------------------------------------------------\par
-\b Setup on Archer\par
-
-\pard\sl276\slmult1\b0\lang9 ssh jholt@login.archer.ac.uk\par
-\par
-export CONFIG=GCOMS1k\par
-
-\pard\sl240\slmult1 export WORK=/work/n01/n01/$USER\par
-
-\pard\sl276\slmult1 export WDIR=$WORK/$CONFIG\par
-export INPUTS=$WDIR/INPUTS\par
-export START_FILES=$WDIR/START_FILES\par
-export CDIR=$WDIR/trunk_NEMOGCM_v4.0.2/cfgs\par
-export TDIR=$WDIR/trunk_NEMOGCM_v4.0.2/tools\par
-
-\pard\sl240\slmult1 export GIT=$WORK/Git/\par
-
-\pard\widctlpar\sl252\slmult1\lang2057 export TMPLD=\lang1033 $CDIR/$CONFIG/\lang2057 GCOMS1k_templates\lang1033\par
-
-\pard\sl240\slmult1\lang9\par
-module swap PrgEnv-cray PrgEnv-intel\par
-module unload cray-netcdf\par
-module load cray-netcdf-hdf5parallel cray-hdf5-parallel\par
-\par
-mkdir $WDIR\par
-mkdir $INPUTS\par
-mkdir $START_FILES\par
-\lang2057 mkdir $GIT\par
-\par
-
-\pard\widctlpar\sl252\slmult1\f2\lang1033 exec ssh-agent $SHELL \par
-ssh-add ~/.ssh/id_rsa\par
-
-\pard\b\f1\lang2057\par
-\b0 #cd $GIT\par
-#git clone {{\field{\*\fldinst{HYPERLINK https://github.com/NOC-MSM/GCOMS1k.git }}{\fldrslt{https://github.com/NOC-MSM/GCOMS1k.git\ul0\cf0}}}}\f1\fs22\par
-\par
-\par
------------------------------------------------------------------------------------------------------------------------------------\f0\par
-\b\f1\lang9 XIOS \lang2057 on Archer\par
-
-\pard\sl240\slmult1\b0\lang9\par
-better to buid properly here\par
-\par
-scp -rp /work/n01/n01/jelt/xios-2.0_r1080 /work/n01/n01/jholt/\par
-
-\pard\f0\lang2057\par
-\f1 -----------------------------------------------------------------------------------------------------------------------------------\f0\par
-\b\f1 Install NEMO on Archer\b0\f0\par
-
-\pard\sl240\slmult1\f1\lang9 cd $WDIR\par
-#svn co  {{\field{\*\fldinst{HYPERLINK http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/release-4.0.2@11849 }}{\fldrslt{http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/release-4.0.2@11849\ul0\cf0}}}}\f1\fs22  trunk_NEMOGCM_v4.0.2\par
- svn co  {\f2\fs24\lang2057{\field{\*\fldinst{HYPERLINK http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.2@12860 }}{\fldrslt{http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.2@12860\ul0\cf0}}}}\f2\fs24\lang2057  \f1\fs22\lang9 trunk_NEMOGCM_v4.0.2\cf2\f2\fs24\lang2057\par
-
-\pard\widctlpar\cf0\f3\par
-
-\pard\sl240\slmult1\f1\fs22\lang9\par
-\lang2057 #cp source $CDIR/../arch/NOC/  not needed? Need Nico's version of xios\lang9\par
-cd $CDIR/..\par
-./makenemo -n $CONFIG -m XC_ARCHER_INTEL -j 10 -r AMM12  clean\par
-\par
-cp $GIT/$CONFIG/GCOMS1k_templates/cpp_$CONFIG.4.0.2.fcm $CDIR/$CONFIG \par
-rmdir  $CDIR/$CONFIG/MY_SRC\par
-ln -s  $GIT/$CONFIG/MY_SRC_v4.0.2 $CDIR/$CONFIG/MY_SRC\par
-ln -s  $GIT/$CONFIG/\lang2057 GCOMS1k_templates\lang9  $CDIR/$CONFIG/\lang2057 GCOMS1k_templates\lang9\par
- \par
-cd $CDIR\par
-./makenemo -n $CONFIG -m XC_ARCHER_INTEL -j 10 -r AMM12  \par
-
-\pard\lang2057 -----------------------------------------------------------------------------------------------------------------------------------\f0\par
-\b\f1\lang9 Install NEMO tools \lang2057 on Archer\par
-
-\pard\sl240\slmult1\b0\lang9\par
-export PATCHES=$GIT/$CONFIG/STARTFILES/PATCHES\par
-cd $TDIR/WEIGHTS/src\par
-patch -b < $PATCHES/scripinterp_mod.patch\par
-patch -b < $PATCHES/scripinterp.patch\par
-patch -b < $PATCHES/scrip.patch\par
-patch -b < $PATCHES/scripshape.patch\par
-patch -b < $PATCHES/scripgrid.patch\par
-cd $TDIR\par
-\par
-./maketools -m XC_ARCHER_INTEL_XIOS1 -n DOMAINcfg\par
-./maketools -m XC_ARCHER_INTEL_XIOS1 -n REBUILD_NEMO\par
-./maketools -m XC_ARCHER_INTEL_XIOS1 -n WEIGHTS\par
-\lang2057\par
-
-\pard -----------------------------------------------------------------------------------------------------------------------------------\f0\par
-\b\f1 Install pyNEMO on livljobs6\b0\f0\par
-
-\pard\widctlpar\sl252\slmult1\f2\lang9 export WORK=/work/$USER\par
-export LD_LIBRARY_PATH=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/lib/amd64/server:$LD_LIBRARY_PATH\par
-unset SSH_ASKPASS\par
-\par
-module load anaconda/2.1.0  # Want python2\par
-conda create --name new_env scipy=0.16.0 numpy=1.9.2 matplotlib=1.4.3 basemap netcdf4 libgfortran=1.0.0 \par
-source activate new_env\par
-\par
-conda install -c {{\field{\*\fldinst{HYPERLINK https://conda.anaconda.org/conda-forge }}{\fldrslt{https://conda.anaconda.org/conda-forge\ul0\cf0}}}}\f2\fs22  seawater=3.3.4\par
-conda install -c {{\field{\*\fldinst{HYPERLINK https://conda.anaconda.org/srikanthnagella }}{\fldrslt{https://conda.anaconda.org/srikanthnagella\ul0\cf0}}}}\f2\fs22  thredds_crawler\par
-conda install -c {{\field{\*\fldinst{HYPERLINK https://conda.anaconda.org/srikanthnagella }}{\fldrslt{https://conda.anaconda.org/srikanthnagella\ul0\cf0}}}}\f2\fs22  pyjnius\par
-cd $WORK\par
-git clone {{\field{\*\fldinst{HYPERLINK https://jpolton@bitbucket.org/jdha/nrct.git }}{\fldrslt{https://jpolton@bitbucket.org/jdha/nrct.git\ul0\cf0}}}}\f2\fs22  nrct  \par
-cd $WORK/nrct/Python\par
-----------------------------\par
-To get correct branch\par
-git checkout Generalise-tide-input\par
-#git checkout ORCA0083\par
-----------------------------\par
-To up date\par
-git pull\par
-----------------------------\par
-To build\par
-python setup.py build clean\par
-python setup.py build\par
-export PYTHONPATH=/login/$USER/.conda/envs/new_env/lib/python2.7/site-packages/:$PYTHONPATH\par
-python setup.py install --prefix ~/.conda/envs/new_env\par
-
-\pard\f0\lang2057\par
-\f1 -----------------------------------------------------------------------------------------------------------------------------------\f0\par
-\b\f1 Access ORCA0083 data on livljobs6\par
-\b0 sshfs on LIVLJOBS6 (requires NOCL to add to fuse group)\b\par
-
-\pard\widctlpar\sl252\slmult1\b0\f2 exec ssh-agent $SHELL\par
-ssh-add ~/.ssh/id_rsa_jasmin\par
-\par
-export GitTEMPLATES= /work/jholt/Git/GCOMS1k/STARTFILES/TEMPLATES/\par
-export JASMINDIR=/work/jholt/JASMIN/\par
-\par
-mkdir $JASMINDIR\par
-mkdir $JASMINDIR/ncml_templates/\par
-\par
-cd $JASMINDIR\par
-mkdir NEMO-ORCA0083-N006/  \par
-mkdir NEMO-ORCA0083-N006-2013_2015/\par
-mkdir NEMO-ORCA0083-N006-fix-2013/  \par
-  \par
-cp $GitTEMPLATES/sym_link_setup-fix .\par
-cp $GitTEMPLATES/ncml_templates/* ncml_templates/\par
-cp $GitTEMPLATES/ncml_setup .\par
-\par
-sshfs jholt@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol1/ORCA0083-N006/means/   $JASMINDIR/NEMO-ORCA0083-N006/  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
-sshfs jholt@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol2/ORCA0083-N006/medusa/ $JASMINDIR/NEMO-ORCA0083-N006-2013_2015/  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
-sshfs jholt@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol5/jdha/ORCA0083-N006-fix/means/ $JASMINDIR/NEMO-ORCA0083-N006-fix-2013  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks\par
-
-\pard\f1\par
-#To unmount:\par
-fusermount -u \f2 $JASMINDIR/NEMO-ORCA0083-N006/  \par
-\f1 fusermount -u \f2 $JASMINDIR/NEMO-ORCA0083-N006-2013_2015/  \par
-\f1 fusermount -u \f2 $JASMINDIR/NEMO-ORCA0083-N006-fix-2013/\par
-\par
-# to set up data access by ncml\par
-ncml_setup\par
-sym_link_setup-fix \par
-\par
-\f1 -----------------------------------------------------------------------------------------------------------------------------------\par
-
-\pard\widctlpar\sl252\slmult1\f2 #Install GridBuilder\par
-{{\field{\*\fldinst{HYPERLINK http://austides.com/wp-content/uploads/GridBuilder_web.exe }}{\fldrslt{http://austides.com/wp-content/uploads/GridBuilder_web.exe\ul0\cf0}}}}\f2\fs22  \par
-module load matlab/2016b\par
- matlab &\par
-In matlab click on GridBuilder.mltbx\par
-#Check Add-Ons location in Preferences:\par
-~/Documents/MATLAB/Add-Ons/Toolboxes/\par
-\par
-#My hack to read GEBCO data\par
-cp ~/work/Git/GCOMS1k/STARTFILES/Generate_Domains/Mfiles/getUserBathymetry.m  ~/Documents/MATLAB/Add-Ons/Toolboxes/GridBuilder/code/Functions/\par
-
-\pard\f1\par
-\par
-----------------------------------------------------------------------------------------------------------------------------------\f0\par
-}
- 
+{\rtf1\adeflang1025\ansi\ansicpg1252\uc1\adeff31507\deff0\stshfdbch31505\stshfloch31506\stshfhich31506\stshfbi31507\deflang2057\deflangfe2057\themelang2057\themelangfe0\themelangcs0{\fonttbl{\f0\fbidi \froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\f2\fbidi \fmodern\fcharset0\fprq1{\*\panose 02070309020205020404}Courier New;}
+{\f34\fbidi \froman\fcharset0\fprq2{\*\panose 02040503050406030204}Cambria Math;}{\f37\fbidi \fswiss\fcharset0\fprq2{\*\panose 020f0502020204030204}Calibri;}{\flomajor\f31500\fbidi \froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}
+{\fdbmajor\f31501\fbidi \froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\fhimajor\f31502\fbidi \fswiss\fcharset0\fprq2{\*\panose 020f0302020204030204}Calibri Light;}
+{\fbimajor\f31503\fbidi \froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\flominor\f31504\fbidi \froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}
+{\fdbminor\f31505\fbidi \froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\fhiminor\f31506\fbidi \fswiss\fcharset0\fprq2{\*\panose 020f0502020204030204}Calibri;}
+{\fbiminor\f31507\fbidi \froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\f44\fbidi \froman\fcharset238\fprq2 Times New Roman CE;}{\f45\fbidi \froman\fcharset204\fprq2 Times New Roman Cyr;}
+{\f47\fbidi \froman\fcharset161\fprq2 Times New Roman Greek;}{\f48\fbidi \froman\fcharset162\fprq2 Times New Roman Tur;}{\f49\fbidi \froman\fcharset177\fprq2 Times New Roman (Hebrew);}{\f50\fbidi \froman\fcharset178\fprq2 Times New Roman (Arabic);}
+{\f51\fbidi \froman\fcharset186\fprq2 Times New Roman Baltic;}{\f52\fbidi \froman\fcharset163\fprq2 Times New Roman (Vietnamese);}{\f64\fbidi \fmodern\fcharset238\fprq1 Courier New CE;}{\f65\fbidi \fmodern\fcharset204\fprq1 Courier New Cyr;}
+{\f67\fbidi \fmodern\fcharset161\fprq1 Courier New Greek;}{\f68\fbidi \fmodern\fcharset162\fprq1 Courier New Tur;}{\f69\fbidi \fmodern\fcharset177\fprq1 Courier New (Hebrew);}{\f70\fbidi \fmodern\fcharset178\fprq1 Courier New (Arabic);}
+{\f71\fbidi \fmodern\fcharset186\fprq1 Courier New Baltic;}{\f72\fbidi \fmodern\fcharset163\fprq1 Courier New (Vietnamese);}{\f414\fbidi \fswiss\fcharset238\fprq2 Calibri CE;}{\f415\fbidi \fswiss\fcharset204\fprq2 Calibri Cyr;}
+{\f417\fbidi \fswiss\fcharset161\fprq2 Calibri Greek;}{\f418\fbidi \fswiss\fcharset162\fprq2 Calibri Tur;}{\f419\fbidi \fswiss\fcharset177\fprq2 Calibri (Hebrew);}{\f420\fbidi \fswiss\fcharset178\fprq2 Calibri (Arabic);}
+{\f421\fbidi \fswiss\fcharset186\fprq2 Calibri Baltic;}{\f422\fbidi \fswiss\fcharset163\fprq2 Calibri (Vietnamese);}{\flomajor\f31508\fbidi \froman\fcharset238\fprq2 Times New Roman CE;}
+{\flomajor\f31509\fbidi \froman\fcharset204\fprq2 Times New Roman Cyr;}{\flomajor\f31511\fbidi \froman\fcharset161\fprq2 Times New Roman Greek;}{\flomajor\f31512\fbidi \froman\fcharset162\fprq2 Times New Roman Tur;}
+{\flomajor\f31513\fbidi \froman\fcharset177\fprq2 Times New Roman (Hebrew);}{\flomajor\f31514\fbidi \froman\fcharset178\fprq2 Times New Roman (Arabic);}{\flomajor\f31515\fbidi \froman\fcharset186\fprq2 Times New Roman Baltic;}
+{\flomajor\f31516\fbidi \froman\fcharset163\fprq2 Times New Roman (Vietnamese);}{\fdbmajor\f31518\fbidi \froman\fcharset238\fprq2 Times New Roman CE;}{\fdbmajor\f31519\fbidi \froman\fcharset204\fprq2 Times New Roman Cyr;}
+{\fdbmajor\f31521\fbidi \froman\fcharset161\fprq2 Times New Roman Greek;}{\fdbmajor\f31522\fbidi \froman\fcharset162\fprq2 Times New Roman Tur;}{\fdbmajor\f31523\fbidi \froman\fcharset177\fprq2 Times New Roman (Hebrew);}
+{\fdbmajor\f31524\fbidi \froman\fcharset178\fprq2 Times New Roman (Arabic);}{\fdbmajor\f31525\fbidi \froman\fcharset186\fprq2 Times New Roman Baltic;}{\fdbmajor\f31526\fbidi \froman\fcharset163\fprq2 Times New Roman (Vietnamese);}
+{\fhimajor\f31528\fbidi \fswiss\fcharset238\fprq2 Calibri Light CE;}{\fhimajor\f31529\fbidi \fswiss\fcharset204\fprq2 Calibri Light Cyr;}{\fhimajor\f31531\fbidi \fswiss\fcharset161\fprq2 Calibri Light Greek;}
+{\fhimajor\f31532\fbidi \fswiss\fcharset162\fprq2 Calibri Light Tur;}{\fhimajor\f31533\fbidi \fswiss\fcharset177\fprq2 Calibri Light (Hebrew);}{\fhimajor\f31534\fbidi \fswiss\fcharset178\fprq2 Calibri Light (Arabic);}
+{\fhimajor\f31535\fbidi \fswiss\fcharset186\fprq2 Calibri Light Baltic;}{\fhimajor\f31536\fbidi \fswiss\fcharset163\fprq2 Calibri Light (Vietnamese);}{\fbimajor\f31538\fbidi \froman\fcharset238\fprq2 Times New Roman CE;}
+{\fbimajor\f31539\fbidi \froman\fcharset204\fprq2 Times New Roman Cyr;}{\fbimajor\f31541\fbidi \froman\fcharset161\fprq2 Times New Roman Greek;}{\fbimajor\f31542\fbidi \froman\fcharset162\fprq2 Times New Roman Tur;}
+{\fbimajor\f31543\fbidi \froman\fcharset177\fprq2 Times New Roman (Hebrew);}{\fbimajor\f31544\fbidi \froman\fcharset178\fprq2 Times New Roman (Arabic);}{\fbimajor\f31545\fbidi \froman\fcharset186\fprq2 Times New Roman Baltic;}
+{\fbimajor\f31546\fbidi \froman\fcharset163\fprq2 Times New Roman (Vietnamese);}{\flominor\f31548\fbidi \froman\fcharset238\fprq2 Times New Roman CE;}{\flominor\f31549\fbidi \froman\fcharset204\fprq2 Times New Roman Cyr;}
+{\flominor\f31551\fbidi \froman\fcharset161\fprq2 Times New Roman Greek;}{\flominor\f31552\fbidi \froman\fcharset162\fprq2 Times New Roman Tur;}{\flominor\f31553\fbidi \froman\fcharset177\fprq2 Times New Roman (Hebrew);}
+{\flominor\f31554\fbidi \froman\fcharset178\fprq2 Times New Roman (Arabic);}{\flominor\f31555\fbidi \froman\fcharset186\fprq2 Times New Roman Baltic;}{\flominor\f31556\fbidi \froman\fcharset163\fprq2 Times New Roman (Vietnamese);}
+{\fdbminor\f31558\fbidi \froman\fcharset238\fprq2 Times New Roman CE;}{\fdbminor\f31559\fbidi \froman\fcharset204\fprq2 Times New Roman Cyr;}{\fdbminor\f31561\fbidi \froman\fcharset161\fprq2 Times New Roman Greek;}
+{\fdbminor\f31562\fbidi \froman\fcharset162\fprq2 Times New Roman Tur;}{\fdbminor\f31563\fbidi \froman\fcharset177\fprq2 Times New Roman (Hebrew);}{\fdbminor\f31564\fbidi \froman\fcharset178\fprq2 Times New Roman (Arabic);}
+{\fdbminor\f31565\fbidi \froman\fcharset186\fprq2 Times New Roman Baltic;}{\fdbminor\f31566\fbidi \froman\fcharset163\fprq2 Times New Roman (Vietnamese);}{\fhiminor\f31568\fbidi \fswiss\fcharset238\fprq2 Calibri CE;}
+{\fhiminor\f31569\fbidi \fswiss\fcharset204\fprq2 Calibri Cyr;}{\fhiminor\f31571\fbidi \fswiss\fcharset161\fprq2 Calibri Greek;}{\fhiminor\f31572\fbidi \fswiss\fcharset162\fprq2 Calibri Tur;}
+{\fhiminor\f31573\fbidi \fswiss\fcharset177\fprq2 Calibri (Hebrew);}{\fhiminor\f31574\fbidi \fswiss\fcharset178\fprq2 Calibri (Arabic);}{\fhiminor\f31575\fbidi \fswiss\fcharset186\fprq2 Calibri Baltic;}
+{\fhiminor\f31576\fbidi \fswiss\fcharset163\fprq2 Calibri (Vietnamese);}{\fbiminor\f31578\fbidi \froman\fcharset238\fprq2 Times New Roman CE;}{\fbiminor\f31579\fbidi \froman\fcharset204\fprq2 Times New Roman Cyr;}
+{\fbiminor\f31581\fbidi \froman\fcharset161\fprq2 Times New Roman Greek;}{\fbiminor\f31582\fbidi \froman\fcharset162\fprq2 Times New Roman Tur;}{\fbiminor\f31583\fbidi \froman\fcharset177\fprq2 Times New Roman (Hebrew);}
+{\fbiminor\f31584\fbidi \froman\fcharset178\fprq2 Times New Roman (Arabic);}{\fbiminor\f31585\fbidi \froman\fcharset186\fprq2 Times New Roman Baltic;}{\fbiminor\f31586\fbidi \froman\fcharset163\fprq2 Times New Roman (Vietnamese);}}
+{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;\red255\green255\blue0;\red255\green255\blue255;\red0\green0\blue128;\red0\green128\blue128;\red0\green128\blue0;
+\red128\green0\blue128;\red128\green0\blue0;\red128\green128\blue0;\red128\green128\blue128;\red192\green192\blue192;\red0\green0\blue0;\red0\green0\blue0;\chyperlink\ctint255\cshade255\red5\green99\blue193;\red96\green94\blue92;\red225\green223\blue221;}
+{\*\defchp \fs22\loch\af31506\hich\af31506\dbch\af31505 }{\*\defpap \ql \li0\ri0\sa160\sl259\slmult1\widctlpar\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 }\noqfpromote {\stylesheet{\ql \li0\ri0\sa160\sl259\slmult1
+\widctlpar\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \rtlch\fcs1 \af31507\afs22\alang1025 \ltrch\fcs0 \fs22\lang2057\langfe2057\loch\f31506\hich\af31506\dbch\af31505\cgrid\langnp2057\langfenp2057 \snext0 \sqformat \spriority0 Normal;}
+{\*\cs10 \additive \ssemihidden \sunhideused \spriority1 Default Paragraph Font;}{\*
+\ts11\tsrowd\trftsWidthB3\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\trcbpat1\trcfpat1\tblind0\tblindtype3\tsvertalt\tsbrdrt\tsbrdrl\tsbrdrb\tsbrdrr\tsbrdrdgl\tsbrdrdgr\tsbrdrh\tsbrdrv \ql \li0\ri0\sa160\sl259\slmult1
+\widctlpar\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \rtlch\fcs1 \af31507\afs22\alang1025 \ltrch\fcs0 \fs22\lang2057\langfe2057\loch\f31506\hich\af31506\dbch\af31505\cgrid\langnp2057\langfenp2057 \snext11 \ssemihidden \sunhideused 
+Normal Table;}{\*\cs15 \additive \rtlch\fcs1 \af0 \ltrch\fcs0 \ul\cf19 \sbasedon10 \sunhideused \styrsid15803438 Hyperlink;}{\*\cs16 \additive \rtlch\fcs1 \af0 \ltrch\fcs0 \cf20\chshdng0\chcfpat0\chcbpat21 
+\sbasedon10 \ssemihidden \sunhideused \styrsid15803438 Unresolved Mention;}}{\*\rsidtbl \rsid9175155\rsid12204196\rsid15803438}{\mmathPr\mmathFont34\mbrkBin0\mbrkBinSub0\msmallFrac0\mdispDef1\mlMargin0\mrMargin0\mdefJc1\mwrapIndent1440\mintLim0\mnaryLim1}
+{\info{\operator Holt, Jason T.}{\creatim\yr2021\mo1\dy10\hr17\min35}{\revtim\yr2021\mo1\dy10\hr18\min5}{\version3}{\edmins30}{\nofpages4}{\nofwords950}{\nofchars5415}{\nofcharsws6353}{\vern123}}{\*\xmlnstbl {\xmlns1 http://schemas.microsoft.com/office/wo
+rd/2003/wordml}}\paperw12240\paperh15840\margl1440\margr1440\margt1440\margb1440\gutter0\ltrsect 
+\widowctrl\ftnbj\aenddoc\trackmoves0\trackformatting1\donotembedsysfont0\relyonvml0\donotembedlingdata1\grfdocevents0\validatexml0\showplaceholdtext0\ignoremixedcontent0\saveinvalidxml0\showxmlerrors0\horzdoc\dghspace120\dgvspace120\dghorigin1701
+\dgvorigin1984\dghshow0\dgvshow3\jcompress\viewkind1\viewscale100\rsidroot9175155 \nouicompat \fet0{\*\wgrffmtfilter 2450}\nofeaturethrottle1\ilfomacatclnup0\ltrpar \sectd \ltrsect\linex0\sectdefaultcl\sftnbj {\*\pnseclvl1
+\pnucrm\pnstart1\pnindent720\pnhang {\pntxta .}}{\*\pnseclvl2\pnucltr\pnstart1\pnindent720\pnhang {\pntxta .}}{\*\pnseclvl3\pndec\pnstart1\pnindent720\pnhang {\pntxta .}}{\*\pnseclvl4\pnlcltr\pnstart1\pnindent720\pnhang {\pntxta )}}{\*\pnseclvl5
+\pndec\pnstart1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}{\*\pnseclvl6\pnlcltr\pnstart1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}{\*\pnseclvl7\pnlcrm\pnstart1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}{\*\pnseclvl8\pnlcltr\pnstart1\pnindent720\pnhang 
+{\pntxtb (}{\pntxta )}}{\*\pnseclvl9\pnlcrm\pnstart1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}\pard\plain \ltrpar\ql \li0\ri0\nowidctlpar\wrapdefault\faauto\rin0\lin0\itap0 \rtlch\fcs1 \af31507\afs22\alang1025 \ltrch\fcs0 
+\fs22\lang2057\langfe2057\loch\af31506\hich\af31506\dbch\af31505\cgrid\langnp2057\langfenp2057 {\rtlch\fcs1 \ab\af2 \ltrch\fcs0 \b\f2\insrsid12204196 \hich\af2\dbch\af31505\loch\f2 GCOMS1k Install
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 -----------------------------------------------------------------------------------------------------------------------------------
+\par }{\rtlch\fcs1 \ab\af37 \ltrch\fcs0 \b\f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 Setup on Archer
+\par }\pard \ltrpar\ql \li0\ri0\sl276\slmult1\nowidctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 ssh jholt@login.archer.ac.uk
+\par 
+\par \hich\af37\dbch\af31505\loch\f37 export CONFIG=GCOMS1k
+\par }\pard \ltrpar\ql \li0\ri0\nowidctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 export WORK=/work/n01/n01/$USER
+\par }\pard \ltrpar\ql \li0\ri0\sl276\slmult1\nowidctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 export WDIR=$WORK/$CONFI\hich\af37\dbch\af31505\loch\f37 
+G
+\par \hich\af37\dbch\af31505\loch\f37 export INPUTS=$WDIR/INPUTS
+\par \hich\af37\dbch\af31505\loch\f37 export START_FILES=$WDIR/START_FILES
+\par \hich\af37\dbch\af31505\loch\f37 export CDIR=$WDIR/trunk_NEMOGCM_v}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid9175155 \hich\af37\dbch\af31505\loch\f37 4.0.4}{\rtlch\fcs1 \af37 \ltrch\fcs0 
+\f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 /cfgs
+\par \hich\af37\dbch\af31505\loch\f37 export TDIR=$WDIR/trunk_NEMOGCM_v}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid9175155 \hich\af37\dbch\af31505\loch\f37 4.0.4}{\rtlch\fcs1 \af37 \ltrch\fcs0 
+\f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 /tools
+\par }\pard \ltrpar\ql \li0\ri0\nowidctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 export GIT=$WORK/Git/
+\par }\pard \ltrpar\ql \li0\ri0\sl252\slmult1\widctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 export TMPLD=}{\rtlch\fcs1 \af37 \ltrch\fcs0 
+\f37\lang1033\langfe2057\langnp1033\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 $CDIR/$CONFIG/}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 GCOMS1k_templates}{\rtlch\fcs1 \af37 \ltrch\fcs0 
+\f37\lang1033\langfe2057\langnp1033\insrsid12204196 
+\par }\pard \ltrpar\ql \li0\ri0\nowidctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 
+\par \hich\af37\dbch\af31505\loch\f37 module swap PrgEnv-cray PrgEnv-in\hich\af37\dbch\af31505\loch\f37 tel
+\par \hich\af37\dbch\af31505\loch\f37 module unload cray-netcdf
+\par \hich\af37\dbch\af31505\loch\f37 module load cray-netcdf-hdf5parallel cray-hdf5-parallel
+\par 
+\par \hich\af37\dbch\af31505\loch\f37 mkdir $WDIR
+\par \hich\af37\dbch\af31505\loch\f37 mkdir $INPUTS
+\par \hich\af37\dbch\af31505\loch\f37 mkdir $START_FILES
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 mkdir $GIT
+\par 
+\par }\pard \ltrpar\ql \li0\ri0\sl252\slmult1\widctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang1033\langfe2057\langnp1033\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 exec ssh-agent $SHELL 
+\par \hich\af37\dbch\af31505\loch\f37 ssh-add ~/.ssh/id_rsa
+\par }\pard \ltrpar\ql \li0\ri0\nowidctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \ab\af37 \ltrch\fcs0 \b\f37\insrsid12204196 
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 #cd $GIT
+\par \hich\af37\dbch\af31505\loch\f37 #git clone }{\field{\*\fldinst {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 HYPERLINK https://github.com/NOC-MSM/GCOMS1k.git }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid9175155 
+{\*\datafield 
+00d0c9ea79f9bace118c8200aa004ba90b0200000003000000e0c9ea79f9bace118c8200aa004ba90b66000000680074007400700073003a002f002f006700690074006800750062002e0063006f006d002f004e004f0043002d004d0053004d002f00470043004f004d00530031006b002e006700690074000000795881f4
+3b1d7f48af2c825dc485276300000000a5ab0003}}}{\fldrslt {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 https://github.com/NOC-MSM/GCOMS1k.git}}}\sectd \ltrsect\linex0\sectdefaultcl\sftnbj {\rtlch\fcs1 \af37 \ltrch\fcs0 
+\f37\insrsid12204196 
+\par 
+\par 
+\par -----------------------------------------------------------------------------------------------------------------------------------}{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid12204196 
+\par }{\rtlch\fcs1 \ab\af37 \ltrch\fcs0 \b\f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 XIOS }{\rtlch\fcs1 \ab\af37 \ltrch\fcs0 \b\f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 on Archer
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 
+\par \hich\af37\dbch\af31505\loch\f37 better to buid \hich\af37\dbch\af31505\loch\f37 properly here
+\par 
+\par \hich\af37\dbch\af31505\loch\f37 scp -rp /work/n01/n01/jelt/xios-2.0_r1080 /work/n01/n01/jholt/
+\par }{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid12204196 
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 -----------------------------------------------------------------------------------------------------------------------------------}{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid12204196 
+\par }{\rtlch\fcs1 \ab\af37 \ltrch\fcs0 \b\f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 Install NEMO on Archer}{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid12204196 
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 cd $WDIR
+\par \hich\af37\dbch\af31505\loch\f37 #svn co  }{\field{\*\fldinst {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid15803438 \hich\af37\dbch\af31505\loch\f37  \hich\af37\dbch\af31505\loch\f37 HYPERLINK \hich\af37\dbch\af31505\loch\f37 "
+\hich\af37\dbch\af31505\loch\f37 http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/release-\hich\af37\dbch\af31505\loch\f37 4.0.\hich\af37\dbch\af31505\loch\f37 1\hich\af37\dbch\af31505\loch\f37 @11849\hich\af37\dbch\af31505\loch\f37 "
+\hich\af37\dbch\af31505\loch\f37  }}{\fldrslt {\rtlch\fcs1 \af37 \ltrch\fcs0 \cs15\f37\ul\cf19\lang9\langfe2057\langnp9\insrsid15803438\charrsid8989920 \hich\af37\dbch\af31505\loch\f37 http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/release-
+\hich\af37\dbch\af31505\loch\f37 4.0.\hich\af37\dbch\af31505\loch\f37 1\hich\af37\dbch\af31505\loch\f37 @11849}}}\sectd \ltrsect\linex0\sectdefaultcl\sftnbj {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 
+\hich\af37\dbch\af31505\loch\f37  trunk_NEMOGCM_v}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid9175155 \hich\af37\dbch\af31505\loch\f37 4.0.}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid15803438 
+\hich\af37\dbch\af31505\loch\f37 1}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid9175155 \hich\af37\dbch\af31505\loch\f37 #}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 svn co  }{\field{\*\fldinst {
+\rtlch\fcs1 \af37\afs24 \ltrch\fcs0 \f37\fs24\insrsid15803438 \hich\af37\dbch\af31505\loch\f37  \hich\af37\dbch\af31505\loch\f37 HYPERLINK \hich\af37\dbch\af31505\loch\f37 "\hich\af37\dbch\af31505\loch\f37 
+http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r\hich\af37\dbch\af31505\loch\f37 4.0.\hich\af37\dbch\af31505\loch\f37 2\hich\af37\dbch\af31505\loch\f37 @12860\hich\af37\dbch\af31505\loch\f37 "\hich\af37\dbch\af31505\loch\f37  }}{\fldrslt {
+\rtlch\fcs1 \af37\afs24 \ltrch\fcs0 \cs15\f37\fs24\ul\cf19\insrsid15803438\charrsid8989920 \hich\af37\dbch\af31505\loch\f37 http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r\hich\af37\dbch\af31505\loch\f37 4.0.\hich\af37\dbch\af31505\loch\f37 2
+\hich\af37\dbch\af31505\loch\f37 @12860}}}\sectd \ltrsect\linex0\sectdefaultcl\sftnbj {\rtlch\fcs1 \af37\afs24 \ltrch\fcs0 \f37\fs24\insrsid12204196 \hich\af37\dbch\af31505\loch\f37  }{\rtlch\fcs1 \af37 \ltrch\fcs0 
+\f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 trunk_NEMOGCM_v}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid9175155 \hich\af37\dbch\af31505\loch\f37 4.0.}{\rtlch\fcs1 \af37 \ltrch\fcs0 
+\f37\lang9\langfe2057\langnp9\insrsid15803438 \hich\af37\dbch\af31505\loch\f37 2}{\rtlch\fcs1 \af37\afs24 \ltrch\fcs0 \f37\fs24\cf1\insrsid12204196 
+\par }\pard \ltrpar\ql \li0\ri0\widctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \f0\fs24\insrsid9175155\charrsid9175155 \hich\af0\dbch\af31505\loch\f0 
+svn co https://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.4 trunk_NEMOGCM_v4.0.4/}{\rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \f0\fs24\insrsid12204196 
+\par }\pard \ltrpar\ql \li0\ri0\nowidctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 #cp source $CDIR/../arch/NOC/  not needed? Need Nico's version of xios}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 
+\par \hich\af37\dbch\af31505\loch\f37 cd $CDIR/..
+\par \hich\af37\dbch\af31505\loch\f37 ./makenemo -n $CONFIG -m XC_ARCHER_INTEL -j 10 -r AMM12  clean
+\par 
+\par \hich\af37\dbch\af31505\loch\f37 cp $GI\hich\af37\dbch\af31505\loch\f37 T/$CONFIG/GCOMS1k_templates/cpp_$CONFIG.}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid9175155 \hich\af37\dbch\af31505\loch\f37 4.0.4}{\rtlch\fcs1 \af37 
+\ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 .fcm $CDIR/$CONFIG 
+\par \hich\af37\dbch\af31505\loch\f37 rmdir  $CDIR/$CONFIG/MY_SRC
+\par \hich\af37\dbch\af31505\loch\f37 ln -s  $GIT/$CONFIG/MY_SRC_v}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid9175155 \hich\af37\dbch\af31505\loch\f37 4.0.4}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 
+\hich\af37\dbch\af31505\loch\f37  $CDIR/$CONFIG/MY_SRC
+\par \hich\af37\dbch\af31505\loch\f37 ln -s  $GIT/$CONFIG/}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 GCOMS1k_templates}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 
+\hich\af37\dbch\af31505\loch\f37  $CDIR/$CONFIG/}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 GCOMS1k_templates}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 
+\par \hich\af37\dbch\af31505\loch\f37  
+\par \hich\af37\dbch\af31505\loch\f37 cd $CDIR}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid15803438 \hich\af37\dbch\af31505\loch\f37 /..}{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid15803438 
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 ./makenemo -n $CONFIG -m XC_ARCHER_INTEL -j 10 -r AMM12  
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 -----------------------------------------------------------------------------------------------------------------------------------}{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid12204196 
+\par }{\rtlch\fcs1 \ab\af37 \ltrch\fcs0 \b\f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 Install NEMO tools }{\rtlch\fcs1 \ab\af37 \ltrch\fcs0 \b\f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 on Archer
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 
+\par \hich\af37\dbch\af31505\loch\f37 export PATCHES=$GIT/$CONFIG/STARTFILES/PATCHES
+\par \hich\af37\dbch\af31505\loch\f37 cd $TDIR/WEIGHTS/src
+\par \hich\af37\dbch\af31505\loch\f37 patch -b < $PATCHES/scripinterp_mod.patch
+\par \hich\af37\dbch\af31505\loch\f37 patch -b < $PATCHES/scripinterp.patch
+\par \hich\af37\dbch\af31505\loch\f37 patch -b < $PATCHES/scrip.patch
+\par \hich\af37\dbch\af31505\loch\f37 patch -b < $PATCHES/scripshape.patch
+\par \hich\af37\dbch\af31505\loch\f37 patch -b < $PATCHES/scripgrid.patch
+\par \hich\af37\dbch\af31505\loch\f37 cd \hich\af37\dbch\af31505\loch\f37 $TDIR
+\par 
+\par \hich\af37\dbch\af31505\loch\f37 ./maketools -m XC_ARCHER_INTEL_XIOS1 -n DOMAINcfg
+\par \hich\af37\dbch\af31505\loch\f37 ./maketools -m XC_ARCHER_INTEL_XIOS1 -n REBUILD_NEMO
+\par \hich\af37\dbch\af31505\loch\f37 ./maketools -m XC_ARCHER_INTEL_XIOS1 -n WEIGHTS
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 
+\par -----------------------------------------------------------------------------------------------------------------------------------}{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid12204196 
+\par }{\rtlch\fcs1 \ab\af37 \ltrch\fcs0 \b\f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 Install pyNEMO on livljobs6}{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid12204196 
+\par }\pard \ltrpar\ql \li0\ri0\sl252\slmult1\widctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 export WORK=/work/$USER
+\par \hich\af37\dbch\af31505\loch\f37 export LD_LIBRARY_PATH=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/lib/amd64/server:$LD_LIBRARY_PATH
+\par \hich\af37\dbch\af31505\loch\f37 unset SSH_ASKPASS
+\par 
+\par \hich\af37\dbch\af31505\loch\f37 module load anaconda/2.1.0  # Want python2
+\par \hich\af37\dbch\af31505\loch\f37 conda create --name new_env scipy=0.16.0 numpy=1.9.2 matplotlib=1.4.3 basemap netcdf4 libgfortran=1.0.0 
+\par \hich\af37\dbch\af31505\loch\f37 source activate new_env
+\par 
+\par \hich\af37\dbch\af31505\loch\f37 conda install -c }{\field{\*\fldinst {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 HYPERLINK https://conda.anaconda.org/conda-forge }{\rtlch\fcs1 \af37 
+\ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid9175155 {\*\datafield 
+00d0c9ea79f9bace118c8200aa004ba90b0200000003000000e0c9ea79f9bace118c8200aa004ba90b66000000680074007400700073003a002f002f0063006f006e00640061002e0061006e00610063006f006e00640061002e006f00720067002f0063006f006e00640061002d0066006f007200670065000000795881f4
+3b1d7f48af2c825dc485276300000000a5ab0003}}}{\fldrslt {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 https://conda.ana\hich\af37\dbch\af31505\loch\f37 conda.org/conda-forge}}}\sectd \ltrsect
+\linex0\sectdefaultcl\sftnbj {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37  seawater=3.3.4
+\par \hich\af37\dbch\af31505\loch\f37 conda install -c }{\field{\*\fldinst {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 HYPERLINK https://conda.anaconda.org/srikanthnagella }{\rtlch\fcs1 \af37 
+\ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid9175155 {\*\datafield 
+00d0c9ea79f9bace118c8200aa004ba90b0200000003000000e0c9ea79f9bace118c8200aa004ba90b6e000000680074007400700073003a002f002f0063006f006e00640061002e0061006e00610063006f006e00640061002e006f00720067002f007300720069006b0061006e00740068006e006100670065006c006c00
+61000000795881f43b1d7f48af2c825dc485276300000000a5ab0003}}}{\fldrslt {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 https://conda.anaconda.org/srikanthnagella}}}\sectd \ltrsect
+\linex0\sectdefaultcl\sftnbj {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37  thredds_crawler
+\par \hich\af37\dbch\af31505\loch\f37 conda install -c }{\field{\*\fldinst {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 HYPERLINK https://conda.anaconda.org/srikanthnagella }{\rtlch\fcs1 \af37 
+\ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid9175155 {\*\datafield 
+00d0c9ea79f9bace118c8200aa004ba90b0200000003000000e0c9ea79f9bace118c8200aa004ba90b6e000000680074007400700073003a002f002f0063006f006e00640061002e0061006e00610063006f006e00640061002e006f00720067002f007300720069006b0061006e00740068006e006100670065006c006c00
+61000000795881f43b1d7f48af2c825dc485276300000000a5ab0003}}}{\fldrslt {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 https://conda.\hich\af37\dbch\af31505\loch\f37 anaconda.org/srikanthnagella}
+}}\sectd \ltrsect\linex0\sectdefaultcl\sftnbj {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37  pyjnius
+\par \hich\af37\dbch\af31505\loch\f37 cd $WORK
+\par \hich\af37\dbch\af31505\loch\f37 git clone }{\field{\*\fldinst {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 HYPERLINK https://jpolton@bitbucket.org/jdha/nrct.git }{\rtlch\fcs1 \af37 
+\ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid9175155 {\*\datafield 
+00d0c9ea79f9bace118c8200aa004ba90b0200000003000000e0c9ea79f9bace118c8200aa004ba90b70000000680074007400700073003a002f002f006a0070006f006c0074006f006e0040006200690074006200750063006b00650074002e006f00720067002f006a006400680061002f006e007200630074002e006700
+690074000000795881f43b1d7f48af2c825dc485276300000000a5ab0003}}}{\fldrslt {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 https://jpolton@bitbucket.org/jdha/nrct.git}}}\sectd \ltrsect
+\linex0\sectdefaultcl\sftnbj {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\lang9\langfe2057\langnp9\insrsid12204196 \hich\af37\dbch\af31505\loch\f37  nrct  
+\par \hich\af37\dbch\af31505\loch\f37 cd $WORK/nrct/Python
+\par ----------------------------
+\par \hich\af37\dbch\af31505\loch\f37 To get correct branch
+\par \hich\af37\dbch\af31505\loch\f37 git checkout Gene\hich\af37\dbch\af31505\loch\f37 ralise-tide-input
+\par \hich\af37\dbch\af31505\loch\f37 #git checkout ORCA0083
+\par ----------------------------
+\par \hich\af37\dbch\af31505\loch\f37 To up date
+\par \hich\af37\dbch\af31505\loch\f37 git pull
+\par ----------------------------
+\par \hich\af37\dbch\af31505\loch\f37 To build
+\par \hich\af37\dbch\af31505\loch\f37 python setup.py build clean
+\par \hich\af37\dbch\af31505\loch\f37 python setup.py build
+\par \hich\af37\dbch\af31505\loch\f37 export PYTHONPATH=/login/$USER/.conda/envs/new_env/lib/python2.7/site-packages\hich\af37\dbch\af31505\loch\f37 /:$PYTHONPATH
+\par \hich\af37\dbch\af31505\loch\f37 python setup.py install --prefix ~/.conda/envs/new_env
+\par }\pard \ltrpar\ql \li0\ri0\nowidctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid12204196 
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 -----------------------------------------------------------------------------------------------------------------------------------}{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid12204196 
+\par }{\rtlch\fcs1 \ab\af37 \ltrch\fcs0 \b\f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 Access ORCA0083 data on livljobs6
+\par }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 sshfs on LIVLJOBS6 (requires NOCL to add to fuse group)}{\rtlch\fcs1 \ab\af37 \ltrch\fcs0 \b\f37\insrsid12204196 
+\par }\pard \ltrpar\ql \li0\ri0\sl252\slmult1\widctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 exec ssh-agent $SHELL
+\par \hich\af37\dbch\af31505\loch\f37 ssh-add ~/.ssh/id_rsa_jasmin
+\par 
+\par \hich\af37\dbch\af31505\loch\f37 export GitTEMPLATES= /work/jholt/Git/GCOMS1k/STARTFILES/TEMPLATES/
+\par \hich\af37\dbch\af31505\loch\f37 export JASMINDIR=/work/jholt/JASMIN/
+\par 
+\par \hich\af37\dbch\af31505\loch\f37 mkdir $JA\hich\af37\dbch\af31505\loch\f37 SMINDIR
+\par \hich\af37\dbch\af31505\loch\f37 mkdir $JASMINDIR/ncml_templates/
+\par 
+\par \hich\af37\dbch\af31505\loch\f37 cd $JASMINDIR
+\par \hich\af37\dbch\af31505\loch\f37 mkdir NEMO-ORCA0083-N006/  
+\par \hich\af37\dbch\af31505\loch\f37 mkdir NEMO-ORCA0083-N006-2013_2015/
+\par \hich\af37\dbch\af31505\loch\f37 mkdir NEMO-ORCA0083-N006-fix-2013/  
+\par \hich\af37\dbch\af31505\loch\f37   
+\par \hich\af37\dbch\af31505\loch\f37 cp $GitTEMPLATES/sym_link_setup-fix .
+\par \hich\af37\dbch\af31505\loch\f37 cp $GitTEMPLATES/ncml_templates/* ncml_templates/
+\par \hich\af37\dbch\af31505\loch\f37 cp $GitT\hich\af37\dbch\af31505\loch\f37 EMPLATES/ncml_setup .
+\par 
+\par \hich\af37\dbch\af31505\loch\f37 sshfs jholt@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol1/ORCA0083-N006/means/   $JASMINDIR/NEMO-ORCA0083-N006/  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks
+\par \hich\af37\dbch\af31505\loch\f37 sshfs jholt@jasmin-xfer1.ceda.ac.uk:/gws/no\hich\af37\dbch\af31505\loch\f37 
+pw/j04/nemo_vol2/ORCA0083-N006/medusa/ $JASMINDIR/NEMO-ORCA0083-N006-2013_2015/  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks
+\par \hich\af37\dbch\af31505\loch\f37 sshfs jholt@jasmin-xfer1.ceda.ac.uk:/gws/nopw/j04/nemo_vol5/jdha/ORCA0083-N006-fix/means/ $JASMINDIR\hich\af37\dbch\af31505\loch\f37 
+/NEMO-ORCA0083-N006-fix-2013  -o default_permissions,uid=18261,gid=18062,umask=022 -o transform_symlinks
+\par }\pard \ltrpar\ql \li0\ri0\nowidctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 
+\par \hich\af37\dbch\af31505\loch\f37 #To unmount:
+\par \hich\af37\dbch\af31505\loch\f37 fusermount -u $JASMINDIR/NEMO-ORCA0083-N006/  
+\par \hich\af37\dbch\af31505\loch\f37 fusermount -u \hich\af37\dbch\af31505\loch\f37 $JASMINDIR/NEMO-ORCA0083-N006-2013_2015/  
+\par \hich\af37\dbch\af31505\loch\f37 fusermount -u $JASMINDIR/NEMO-ORCA0083-N006-fix-2013/
+\par 
+\par \hich\af37\dbch\af31505\loch\f37 # to set up data access by ncml
+\par \hich\af37\dbch\af31505\loch\f37 ncml_setup
+\par \hich\af37\dbch\af31505\loch\f37 sym_link_setup-fix 
+\par 
+\par -----------------------------------------------------------------------------------------------------------------------------------
+\par }\pard \ltrpar\ql \li0\ri0\sl252\slmult1\widctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 #Install GridBuilder
+\par }{\field{\*\fldinst {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 HYPERLINK http://austides.com/wp-content/uploads/GridBuilder_web.exe }{\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid9175155 {\*\datafield 
+00d0c9ea79f9bace118c8200aa004ba90b0200000003000000e0c9ea79f9bace118c8200aa004ba90b8e00000068007400740070003a002f002f00610075007300740069006400650073002e0063006f006d002f00770070002d0063006f006e00740065006e0074002f00750070006c006f006100640073002f0047007200
+690064004200750069006c006400650072005f007700650062002e006500780065000000795881f43b1d7f48af2c825dc485276300000000a5ab0003}}}{\fldrslt {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37 
+http://austides.com/wp-content/uploads/GridBuilder_web.exe}}}\sectd \ltrsect\linex0\sectdefaultcl\sftnbj {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 \hich\af37\dbch\af31505\loch\f37  
+\par \hich\af37\dbch\af31505\loch\f37 module load matlab/2016b
+\par \hich\af37\dbch\af31505\loch\f37  matlab &
+\par \hich\af37\dbch\af31505\loch\f37 In matlab click on GridBuilder\hich\af37\dbch\af31505\loch\f37 .mltbx
+\par \hich\af37\dbch\af31505\loch\f37 #Check Add-Ons location in Preferences:
+\par \hich\af37\dbch\af31505\loch\f37 ~/Documents/MATLAB/Add-Ons/Toolboxes/
+\par 
+\par \hich\af37\dbch\af31505\loch\f37 #My hack to read GEBCO data
+\par \hich\af37\dbch\af31505\loch\f37 cp ~/work/Git/GCOMS1k/STARTFILES/Generate_Domains/Mfiles/getUserBathymetry.m  ~/Documents/MATLAB/Add-Ons/Toolboxes/GridBuilder/code/Functions/
+\par }\pard \ltrpar\ql \li0\ri0\nowidctlpar\wrapdefault\faauto\rin0\lin0\itap0 {\rtlch\fcs1 \af37 \ltrch\fcs0 \f37\insrsid12204196 
+\par 
+\par ----------------------------------------------------------------------------------------------------------------------------------}{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid12204196 
+\par }{\*\themedata 504b030414000600080000002100e9de0fbfff0000001c020000130000005b436f6e74656e745f54797065735d2e786d6cac91cb4ec3301045f748fc83e52d4a
+9cb2400825e982c78ec7a27cc0c8992416c9d8b2a755fbf74cd25442a820166c2cd933f79e3be372bd1f07b5c3989ca74aaff2422b24eb1b475da5df374fd9ad
+5689811a183c61a50f98f4babebc2837878049899a52a57be670674cb23d8e90721f90a4d2fa3802cb35762680fd800ecd7551dc18eb899138e3c943d7e503b6
+b01d583deee5f99824e290b4ba3f364eac4a430883b3c092d4eca8f946c916422ecab927f52ea42b89a1cd59c254f919b0e85e6535d135a8de20f20b8c12c3b0
+0c895fcf6720192de6bf3b9e89ecdbd6596cbcdd8eb28e7c365ecc4ec1ff1460f53fe813d3cc7f5b7f020000ffff0300504b030414000600080000002100a5d6
+a7e7c0000000360100000b0000005f72656c732f2e72656c73848fcf6ac3300c87ef85bd83d17d51d2c31825762fa590432fa37d00e1287f68221bdb1bebdb4f
+c7060abb0884a4eff7a93dfeae8bf9e194e720169aaa06c3e2433fcb68e1763dbf7f82c985a4a725085b787086a37bdbb55fbc50d1a33ccd311ba548b6309512
+0f88d94fbc52ae4264d1c910d24a45db3462247fa791715fd71f989e19e0364cd3f51652d73760ae8fa8c9ffb3c330cc9e4fc17faf2ce545046e37944c69e462
+a1a82fe353bd90a865aad41ed0b5b8f9d6fd010000ffff0300504b0304140006000800000021006b799616830000008a0000001c0000007468656d652f746865
+6d652f7468656d654d616e616765722e786d6c0ccc4d0ac3201040e17da17790d93763bb284562b2cbaebbf600439c1a41c7a0d29fdbd7e5e38337cedf14d59b
+4b0d592c9c070d8a65cd2e88b7f07c2ca71ba8da481cc52c6ce1c715e6e97818c9b48d13df49c873517d23d59085adb5dd20d6b52bd521ef2cdd5eb9246a3d8b
+4757e8d3f729e245eb2b260a0238fd010000ffff0300504b030414000600080000002100b6f4679893070000c9200000160000007468656d652f7468656d652f
+7468656d65312e786d6cec59cd8b1bc915bf07f23f347d97f5d5ad8fc1f2a24fcfda33b6b164873dd648a5eef2547789aad28cc56208de532e81c026e49085bd
+ed21842cecc22eb9e48f31d8249b3f22afaa5bdd5552c99e191c3061463074977eefd5afde7bf5de53d5ddcf5e26d4bbc05c1096f6fcfa9d9aefe174ce16248d
+7afeb3d9a4d2f13d2151ba4094a5b8e76fb0f03fbbf7eb5fdd454732c609f6403e1547a8e7c752ae8eaa5531876124eeb0154ee1bb25e30992f0caa3ea82a34b
+d09bd06aa3566b55134452df4b51026a1f2f97648ebd9952e9dfdb2a1f53784da5500373caa74a35b6243476715e5708b11143cabd0b447b3eccb3609733fc52
+fa1e4542c2173dbfa6fffceabdbb5574940b517940d6909be8bf5c2e17589c37f49c3c3a2b260d823068f50bfd1a40e53e6edc1eb7c6ad429f06a0f91c569a71
+b175b61bc320c71aa0ecd1a17bd41e35eb16ded0dfdce3dc0fd5c7c26b50a63fd8c34f2643b0a285d7a00c1feee1c3417730b2f56b50866fede1dbb5fe28685b
+fa3528a6243ddf43d7c25673b85d6d0159327aec8477c360d26ee4ca4b144443115d6a8a254be5a1584bd00bc6270050408a24493db959e1259a43140f112567
+9c7827248a21f056286502866b8ddaa4d684ffea13e827ed5174849121ad780113b137a4f87862cec94af6fc07a0d537206f7ffef9cdeb1fdfbcfee9cd575fbd
+79fdf77c6eadca923b466964cafdf2dd1ffef3cd6fbd7ffff0ed2f5fff319b7a172f4cfcbbbffdeedd3ffef93ef5b0e2d2146ffff4fdbb1fbf7ffbe7dfffebaf
+5f3bb4f7393a33e1339260e13dc297de5396c0021dfcf119bf9ec42c46c494e8a791402952b338f48f656ca11f6d10450edc00db767cce21d5b880f7d72f2cc2
+d398af2571687c182716f094313a60dc6985876a2ec3ccb3751ab927e76b13f714a10bd7dc43945a5e1eaf579063894be530c616cd2714a5124538c5d253dfb1
+738c1dabfb8210cbaea764ce99604be97d41bc01224e93ccc899154da5d03149c02f1b1741f0b7659bd3e7de8051d7aa47f8c246c2de40d4417e86a965c6fb68
+2d51e252394309350d7e8264ec2239ddf0b9891b0b099e8e3065de78818570c93ce6b05ec3e90f21cdb8dd7e4a37898de4929cbb749e20c64ce4889d0f6394ac
+5cd829496313fbb938871045de13265df05366ef10f50e7e40e941773f27d872f787b3c133c8b026a53240d4376beef0e57dccacf89d6ee8126157aae9f3c44a
+b17d4e9cd131584756689f604cd1255a60ec3dfbdcc160c05696cd4bd20f62c82ac7d815580f901dabea3dc5027a25d5dcece7c91322ac909de2881de073bad9
+493c1b9426881fd2fc08bc6eda7c0ca52e7105c0633a3f37818f08f480102f4ea33c16a0c308ee835a9fc4c82a60ea5db8e375c32dff5d658fc1be7c61d1b8c2
+be04197c6d1948eca6cc7b6d3343d49aa00c9819822ec3956e41c4727f29a28aab165b3be596f6a62ddd00dd91d5f42424fd6007b4d3fb84ffbbde073a8cb77f
+f9c6b10f3e4ebfe3566c25ab6b763a8792c9f14e7f7308b7dbd50c195f904fbfa919a175fa04431dd9cf58b73dcd6d4fe3ffdff73487f6f36d2773a8dfb8ed64
+7ce8306e3b99fc70e5e3743265f3027d8d3af0c80e7af4b14f72f0d46749289dca0dc527421ffc08f83db398c0a092d3279eb838055cc5f0a8ca1c4c60e1228e
+b48cc799fc0d91f134462b381daafb4a492472d591f0564cc0a1911e76ea5678ba4e4ed9223becacd7d5c16656590592e5782d2cc6e1a04a66e856bb3cc02bd4
+6bb6913e68dd1250b2d721614c6693683a48b4b783ca48fa58178ce620a157f65158741d2c3a4afdd6557b2c805ae115f8c1edc1cff49e1f06200242701e07cd
+f942f92973f5d6bbda991fd3d3878c69450034d8db08283ddd555c0f2e4fad2e0bb52b78da2261849b4d425b46377822869fc17974aad1abd0b8aeafbba54b2d
+7aca147a3e08ad9246bbf33e1637f535c8ede6069a9a9982a6de65cf6f35430899395af5fc251c1ac363b282d811ea3717a211dcbccc25cf36fc4d32cb8a0b39
+4222ce0cae934e960d122231f728497abe5a7ee1069aea1ca2b9d51b90103e59725d482b9f1a3970baed64bc5ce2b934dd6e8c284b67af90e1b35ce1fc568bdf
+1cac24d91adc3d8d1797de195df3a708422c6cd795011744c0dd413db3e682c0655891c8caf8db294c79da356fa3740c65e388ae62945714339967709dca0b3a
+faadb081f196af190c6a98242f8467912ab0a651ad6a5a548d8cc3c1aafb6121653923699635d3ca2aaa6abab39835c3b60cecd8f26645de60b53531e434b3c2
+67a97b37e576b7b96ea74f28aa0418bcb09fa3ea5ea12018d4cac92c6a8af17e1a56393b1fb56bc776811fa07695226164fdd656ed8edd8a1ae19c0e066f54f9
+416e376a6168b9ed2bb5a5f5adb979b1cdce5e40f2184197bba6526857c2c92e47d0104d754f92a50dd8222f65be35e0c95b73d2f3bfac85fd60d80887955a27
+1c57826650ab74c27eb3d20fc3667d1cd66ba341e31514161927f530bbb19fc00506dde4f7f67a7cefee3ed9ded1dc99b3a4caf4dd7c5513d777f7f5c6e1bb7b
+8f40d2f9b2d598749bdd41abd26df627956034e854bac3d6a0326a0ddba3c9681876ba9357be77a1c141bf390c5ae34ea5551f0e2b41aba6e877ba9576d068f4
+8376bf330efaaff23606569ea58fdc16605ecdebde7f010000ffff0300504b0304140006000800000021000dd1909fb60000001b010000270000007468656d65
+2f7468656d652f5f72656c732f7468656d654d616e616765722e786d6c2e72656c73848f4d0ac2301484f78277086f6fd3ba109126dd88d0add40384e4350d36
+3f2451eced0dae2c082e8761be9969bb979dc9136332de3168aa1a083ae995719ac16db8ec8e4052164e89d93b64b060828e6f37ed1567914b284d262452282e
+3198720e274a939cd08a54f980ae38a38f56e422a3a641c8bbd048f7757da0f19b017cc524bd62107bd5001996509affb3fd381a89672f1f165dfe514173d985
+0528a2c6cce0239baa4c04ca5bbabac4df000000ffff0300504b01022d0014000600080000002100e9de0fbfff0000001c020000130000000000000000000000
+0000000000005b436f6e74656e745f54797065735d2e786d6c504b01022d0014000600080000002100a5d6a7e7c0000000360100000b00000000000000000000
+000000300100005f72656c732f2e72656c73504b01022d00140006000800000021006b799616830000008a0000001c0000000000000000000000000019020000
+7468656d652f7468656d652f7468656d654d616e616765722e786d6c504b01022d0014000600080000002100b6f4679893070000c92000001600000000000000
+000000000000d60200007468656d652f7468656d652f7468656d65312e786d6c504b01022d00140006000800000021000dd1909fb60000001b01000027000000
+000000000000000000009d0a00007468656d652f7468656d652f5f72656c732f7468656d654d616e616765722e786d6c2e72656c73504b050600000000050005005d010000980b00000000}
+{\*\colorschememapping 3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d225554462d3822207374616e64616c6f6e653d22796573223f3e0d0a3c613a636c724d
+617020786d6c6e733a613d22687474703a2f2f736368656d61732e6f70656e786d6c666f726d6174732e6f72672f64726177696e676d6c2f323030362f6d6169
+6e22206267313d226c743122207478313d22646b3122206267323d226c743222207478323d22646b322220616363656e74313d22616363656e74312220616363
+656e74323d22616363656e74322220616363656e74333d22616363656e74332220616363656e74343d22616363656e74342220616363656e74353d22616363656e74352220616363656e74363d22616363656e74362220686c696e6b3d22686c696e6b2220666f6c486c696e6b3d22666f6c486c696e6b222f3e}
+{\*\latentstyles\lsdstimax376\lsdlockeddef0\lsdsemihiddendef0\lsdunhideuseddef0\lsdqformatdef0\lsdprioritydef99{\lsdlockedexcept \lsdqformat1 \lsdpriority0 \lsdlocked0 Normal;\lsdqformat1 \lsdpriority9 \lsdlocked0 heading 1;
+\lsdsemihidden1 \lsdunhideused1 \lsdqformat1 \lsdpriority9 \lsdlocked0 heading 2;\lsdsemihidden1 \lsdunhideused1 \lsdqformat1 \lsdpriority9 \lsdlocked0 heading 3;\lsdsemihidden1 \lsdunhideused1 \lsdqformat1 \lsdpriority9 \lsdlocked0 heading 4;
+\lsdsemihidden1 \lsdunhideused1 \lsdqformat1 \lsdpriority9 \lsdlocked0 heading 5;\lsdsemihidden1 \lsdunhideused1 \lsdqformat1 \lsdpriority9 \lsdlocked0 heading 6;\lsdsemihidden1 \lsdunhideused1 \lsdqformat1 \lsdpriority9 \lsdlocked0 heading 7;
+\lsdsemihidden1 \lsdunhideused1 \lsdqformat1 \lsdpriority9 \lsdlocked0 heading 8;\lsdsemihidden1 \lsdunhideused1 \lsdqformat1 \lsdpriority9 \lsdlocked0 heading 9;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 index 1;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 index 2;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 index 3;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 index 4;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 index 5;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 index 6;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 index 7;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 index 8;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 index 9;
+\lsdsemihidden1 \lsdunhideused1 \lsdpriority39 \lsdlocked0 toc 1;\lsdsemihidden1 \lsdunhideused1 \lsdpriority39 \lsdlocked0 toc 2;\lsdsemihidden1 \lsdunhideused1 \lsdpriority39 \lsdlocked0 toc 3;
+\lsdsemihidden1 \lsdunhideused1 \lsdpriority39 \lsdlocked0 toc 4;\lsdsemihidden1 \lsdunhideused1 \lsdpriority39 \lsdlocked0 toc 5;\lsdsemihidden1 \lsdunhideused1 \lsdpriority39 \lsdlocked0 toc 6;
+\lsdsemihidden1 \lsdunhideused1 \lsdpriority39 \lsdlocked0 toc 7;\lsdsemihidden1 \lsdunhideused1 \lsdpriority39 \lsdlocked0 toc 8;\lsdsemihidden1 \lsdunhideused1 \lsdpriority39 \lsdlocked0 toc 9;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Normal Indent;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 footnote text;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 annotation text;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 header;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 footer;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 index heading;\lsdsemihidden1 \lsdunhideused1 \lsdqformat1 \lsdpriority35 \lsdlocked0 caption;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 table of figures;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 envelope address;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 envelope return;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 footnote reference;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 annotation reference;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 line number;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 page number;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 endnote reference;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 endnote text;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 table of authorities;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 macro;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 toa heading;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Bullet;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Number;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List 2;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List 3;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List 4;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List 5;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Bullet 2;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Bullet 3;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Bullet 4;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Bullet 5;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Number 2;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Number 3;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Number 4;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Number 5;\lsdqformat1 \lsdpriority10 \lsdlocked0 Title;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Closing;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Signature;\lsdsemihidden1 \lsdunhideused1 \lsdpriority1 \lsdlocked0 Default Paragraph Font;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Body Text;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Body Text Indent;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Continue;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Continue 2;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Continue 3;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Continue 4;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 List Continue 5;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Message Header;\lsdqformat1 \lsdpriority11 \lsdlocked0 Subtitle;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Salutation;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Date;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Body Text First Indent;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Body Text First Indent 2;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Note Heading;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Body Text 2;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Body Text 3;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Body Text Indent 2;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Body Text Indent 3;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Block Text;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Hyperlink;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 FollowedHyperlink;\lsdqformat1 \lsdpriority22 \lsdlocked0 Strong;
+\lsdqformat1 \lsdpriority20 \lsdlocked0 Emphasis;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Document Map;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Plain Text;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 E-mail Signature;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 HTML Top of Form;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 HTML Bottom of Form;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Normal (Web);\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 HTML Acronym;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 HTML Address;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 HTML Cite;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 HTML Code;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 HTML Definition;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 HTML Keyboard;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 HTML Preformatted;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 HTML Sample;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 HTML Typewriter;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 HTML Variable;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Normal Table;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 annotation subject;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 No List;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Outline List 1;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Outline List 2;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Outline List 3;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Simple 1;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Simple 2;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Simple 3;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Classic 1;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Classic 2;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Classic 3;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Classic 4;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Colorful 1;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Colorful 2;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Colorful 3;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Columns 1;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Columns 2;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Columns 3;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Columns 4;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Columns 5;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Grid 1;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Grid 2;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Grid 3;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Grid 4;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Grid 5;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Grid 6;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Grid 7;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Grid 8;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table List 1;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table List 2;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table List 3;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table List 4;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table List 5;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table List 6;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table List 7;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table List 8;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table 3D effects 1;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table 3D effects 2;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table 3D effects 3;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Contemporary;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Elegant;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Professional;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Subtle 1;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Subtle 2;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Web 1;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Web 2;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Web 3;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Balloon Text;\lsdpriority39 \lsdlocked0 Table Grid;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Table Theme;\lsdsemihidden1 \lsdlocked0 Placeholder Text;
+\lsdqformat1 \lsdpriority1 \lsdlocked0 No Spacing;\lsdpriority60 \lsdlocked0 Light Shading;\lsdpriority61 \lsdlocked0 Light List;\lsdpriority62 \lsdlocked0 Light Grid;\lsdpriority63 \lsdlocked0 Medium Shading 1;\lsdpriority64 \lsdlocked0 Medium Shading 2;
+\lsdpriority65 \lsdlocked0 Medium List 1;\lsdpriority66 \lsdlocked0 Medium List 2;\lsdpriority67 \lsdlocked0 Medium Grid 1;\lsdpriority68 \lsdlocked0 Medium Grid 2;\lsdpriority69 \lsdlocked0 Medium Grid 3;\lsdpriority70 \lsdlocked0 Dark List;
+\lsdpriority71 \lsdlocked0 Colorful Shading;\lsdpriority72 \lsdlocked0 Colorful List;\lsdpriority73 \lsdlocked0 Colorful Grid;\lsdpriority60 \lsdlocked0 Light Shading Accent 1;\lsdpriority61 \lsdlocked0 Light List Accent 1;
+\lsdpriority62 \lsdlocked0 Light Grid Accent 1;\lsdpriority63 \lsdlocked0 Medium Shading 1 Accent 1;\lsdpriority64 \lsdlocked0 Medium Shading 2 Accent 1;\lsdpriority65 \lsdlocked0 Medium List 1 Accent 1;\lsdsemihidden1 \lsdlocked0 Revision;
+\lsdqformat1 \lsdpriority34 \lsdlocked0 List Paragraph;\lsdqformat1 \lsdpriority29 \lsdlocked0 Quote;\lsdqformat1 \lsdpriority30 \lsdlocked0 Intense Quote;\lsdpriority66 \lsdlocked0 Medium List 2 Accent 1;\lsdpriority67 \lsdlocked0 Medium Grid 1 Accent 1;
+\lsdpriority68 \lsdlocked0 Medium Grid 2 Accent 1;\lsdpriority69 \lsdlocked0 Medium Grid 3 Accent 1;\lsdpriority70 \lsdlocked0 Dark List Accent 1;\lsdpriority71 \lsdlocked0 Colorful Shading Accent 1;\lsdpriority72 \lsdlocked0 Colorful List Accent 1;
+\lsdpriority73 \lsdlocked0 Colorful Grid Accent 1;\lsdpriority60 \lsdlocked0 Light Shading Accent 2;\lsdpriority61 \lsdlocked0 Light List Accent 2;\lsdpriority62 \lsdlocked0 Light Grid Accent 2;\lsdpriority63 \lsdlocked0 Medium Shading 1 Accent 2;
+\lsdpriority64 \lsdlocked0 Medium Shading 2 Accent 2;\lsdpriority65 \lsdlocked0 Medium List 1 Accent 2;\lsdpriority66 \lsdlocked0 Medium List 2 Accent 2;\lsdpriority67 \lsdlocked0 Medium Grid 1 Accent 2;\lsdpriority68 \lsdlocked0 Medium Grid 2 Accent 2;
+\lsdpriority69 \lsdlocked0 Medium Grid 3 Accent 2;\lsdpriority70 \lsdlocked0 Dark List Accent 2;\lsdpriority71 \lsdlocked0 Colorful Shading Accent 2;\lsdpriority72 \lsdlocked0 Colorful List Accent 2;\lsdpriority73 \lsdlocked0 Colorful Grid Accent 2;
+\lsdpriority60 \lsdlocked0 Light Shading Accent 3;\lsdpriority61 \lsdlocked0 Light List Accent 3;\lsdpriority62 \lsdlocked0 Light Grid Accent 3;\lsdpriority63 \lsdlocked0 Medium Shading 1 Accent 3;\lsdpriority64 \lsdlocked0 Medium Shading 2 Accent 3;
+\lsdpriority65 \lsdlocked0 Medium List 1 Accent 3;\lsdpriority66 \lsdlocked0 Medium List 2 Accent 3;\lsdpriority67 \lsdlocked0 Medium Grid 1 Accent 3;\lsdpriority68 \lsdlocked0 Medium Grid 2 Accent 3;\lsdpriority69 \lsdlocked0 Medium Grid 3 Accent 3;
+\lsdpriority70 \lsdlocked0 Dark List Accent 3;\lsdpriority71 \lsdlocked0 Colorful Shading Accent 3;\lsdpriority72 \lsdlocked0 Colorful List Accent 3;\lsdpriority73 \lsdlocked0 Colorful Grid Accent 3;\lsdpriority60 \lsdlocked0 Light Shading Accent 4;
+\lsdpriority61 \lsdlocked0 Light List Accent 4;\lsdpriority62 \lsdlocked0 Light Grid Accent 4;\lsdpriority63 \lsdlocked0 Medium Shading 1 Accent 4;\lsdpriority64 \lsdlocked0 Medium Shading 2 Accent 4;\lsdpriority65 \lsdlocked0 Medium List 1 Accent 4;
+\lsdpriority66 \lsdlocked0 Medium List 2 Accent 4;\lsdpriority67 \lsdlocked0 Medium Grid 1 Accent 4;\lsdpriority68 \lsdlocked0 Medium Grid 2 Accent 4;\lsdpriority69 \lsdlocked0 Medium Grid 3 Accent 4;\lsdpriority70 \lsdlocked0 Dark List Accent 4;
+\lsdpriority71 \lsdlocked0 Colorful Shading Accent 4;\lsdpriority72 \lsdlocked0 Colorful List Accent 4;\lsdpriority73 \lsdlocked0 Colorful Grid Accent 4;\lsdpriority60 \lsdlocked0 Light Shading Accent 5;\lsdpriority61 \lsdlocked0 Light List Accent 5;
+\lsdpriority62 \lsdlocked0 Light Grid Accent 5;\lsdpriority63 \lsdlocked0 Medium Shading 1 Accent 5;\lsdpriority64 \lsdlocked0 Medium Shading 2 Accent 5;\lsdpriority65 \lsdlocked0 Medium List 1 Accent 5;\lsdpriority66 \lsdlocked0 Medium List 2 Accent 5;
+\lsdpriority67 \lsdlocked0 Medium Grid 1 Accent 5;\lsdpriority68 \lsdlocked0 Medium Grid 2 Accent 5;\lsdpriority69 \lsdlocked0 Medium Grid 3 Accent 5;\lsdpriority70 \lsdlocked0 Dark List Accent 5;\lsdpriority71 \lsdlocked0 Colorful Shading Accent 5;
+\lsdpriority72 \lsdlocked0 Colorful List Accent 5;\lsdpriority73 \lsdlocked0 Colorful Grid Accent 5;\lsdpriority60 \lsdlocked0 Light Shading Accent 6;\lsdpriority61 \lsdlocked0 Light List Accent 6;\lsdpriority62 \lsdlocked0 Light Grid Accent 6;
+\lsdpriority63 \lsdlocked0 Medium Shading 1 Accent 6;\lsdpriority64 \lsdlocked0 Medium Shading 2 Accent 6;\lsdpriority65 \lsdlocked0 Medium List 1 Accent 6;\lsdpriority66 \lsdlocked0 Medium List 2 Accent 6;
+\lsdpriority67 \lsdlocked0 Medium Grid 1 Accent 6;\lsdpriority68 \lsdlocked0 Medium Grid 2 Accent 6;\lsdpriority69 \lsdlocked0 Medium Grid 3 Accent 6;\lsdpriority70 \lsdlocked0 Dark List Accent 6;\lsdpriority71 \lsdlocked0 Colorful Shading Accent 6;
+\lsdpriority72 \lsdlocked0 Colorful List Accent 6;\lsdpriority73 \lsdlocked0 Colorful Grid Accent 6;\lsdqformat1 \lsdpriority19 \lsdlocked0 Subtle Emphasis;\lsdqformat1 \lsdpriority21 \lsdlocked0 Intense Emphasis;
+\lsdqformat1 \lsdpriority31 \lsdlocked0 Subtle Reference;\lsdqformat1 \lsdpriority32 \lsdlocked0 Intense Reference;\lsdqformat1 \lsdpriority33 \lsdlocked0 Book Title;\lsdsemihidden1 \lsdunhideused1 \lsdpriority37 \lsdlocked0 Bibliography;
+\lsdsemihidden1 \lsdunhideused1 \lsdqformat1 \lsdpriority39 \lsdlocked0 TOC Heading;\lsdpriority41 \lsdlocked0 Plain Table 1;\lsdpriority42 \lsdlocked0 Plain Table 2;\lsdpriority43 \lsdlocked0 Plain Table 3;\lsdpriority44 \lsdlocked0 Plain Table 4;
+\lsdpriority45 \lsdlocked0 Plain Table 5;\lsdpriority40 \lsdlocked0 Grid Table Light;\lsdpriority46 \lsdlocked0 Grid Table 1 Light;\lsdpriority47 \lsdlocked0 Grid Table 2;\lsdpriority48 \lsdlocked0 Grid Table 3;\lsdpriority49 \lsdlocked0 Grid Table 4;
+\lsdpriority50 \lsdlocked0 Grid Table 5 Dark;\lsdpriority51 \lsdlocked0 Grid Table 6 Colorful;\lsdpriority52 \lsdlocked0 Grid Table 7 Colorful;\lsdpriority46 \lsdlocked0 Grid Table 1 Light Accent 1;\lsdpriority47 \lsdlocked0 Grid Table 2 Accent 1;
+\lsdpriority48 \lsdlocked0 Grid Table 3 Accent 1;\lsdpriority49 \lsdlocked0 Grid Table 4 Accent 1;\lsdpriority50 \lsdlocked0 Grid Table 5 Dark Accent 1;\lsdpriority51 \lsdlocked0 Grid Table 6 Colorful Accent 1;
+\lsdpriority52 \lsdlocked0 Grid Table 7 Colorful Accent 1;\lsdpriority46 \lsdlocked0 Grid Table 1 Light Accent 2;\lsdpriority47 \lsdlocked0 Grid Table 2 Accent 2;\lsdpriority48 \lsdlocked0 Grid Table 3 Accent 2;
+\lsdpriority49 \lsdlocked0 Grid Table 4 Accent 2;\lsdpriority50 \lsdlocked0 Grid Table 5 Dark Accent 2;\lsdpriority51 \lsdlocked0 Grid Table 6 Colorful Accent 2;\lsdpriority52 \lsdlocked0 Grid Table 7 Colorful Accent 2;
+\lsdpriority46 \lsdlocked0 Grid Table 1 Light Accent 3;\lsdpriority47 \lsdlocked0 Grid Table 2 Accent 3;\lsdpriority48 \lsdlocked0 Grid Table 3 Accent 3;\lsdpriority49 \lsdlocked0 Grid Table 4 Accent 3;
+\lsdpriority50 \lsdlocked0 Grid Table 5 Dark Accent 3;\lsdpriority51 \lsdlocked0 Grid Table 6 Colorful Accent 3;\lsdpriority52 \lsdlocked0 Grid Table 7 Colorful Accent 3;\lsdpriority46 \lsdlocked0 Grid Table 1 Light Accent 4;
+\lsdpriority47 \lsdlocked0 Grid Table 2 Accent 4;\lsdpriority48 \lsdlocked0 Grid Table 3 Accent 4;\lsdpriority49 \lsdlocked0 Grid Table 4 Accent 4;\lsdpriority50 \lsdlocked0 Grid Table 5 Dark Accent 4;
+\lsdpriority51 \lsdlocked0 Grid Table 6 Colorful Accent 4;\lsdpriority52 \lsdlocked0 Grid Table 7 Colorful Accent 4;\lsdpriority46 \lsdlocked0 Grid Table 1 Light Accent 5;\lsdpriority47 \lsdlocked0 Grid Table 2 Accent 5;
+\lsdpriority48 \lsdlocked0 Grid Table 3 Accent 5;\lsdpriority49 \lsdlocked0 Grid Table 4 Accent 5;\lsdpriority50 \lsdlocked0 Grid Table 5 Dark Accent 5;\lsdpriority51 \lsdlocked0 Grid Table 6 Colorful Accent 5;
+\lsdpriority52 \lsdlocked0 Grid Table 7 Colorful Accent 5;\lsdpriority46 \lsdlocked0 Grid Table 1 Light Accent 6;\lsdpriority47 \lsdlocked0 Grid Table 2 Accent 6;\lsdpriority48 \lsdlocked0 Grid Table 3 Accent 6;
+\lsdpriority49 \lsdlocked0 Grid Table 4 Accent 6;\lsdpriority50 \lsdlocked0 Grid Table 5 Dark Accent 6;\lsdpriority51 \lsdlocked0 Grid Table 6 Colorful Accent 6;\lsdpriority52 \lsdlocked0 Grid Table 7 Colorful Accent 6;
+\lsdpriority46 \lsdlocked0 List Table 1 Light;\lsdpriority47 \lsdlocked0 List Table 2;\lsdpriority48 \lsdlocked0 List Table 3;\lsdpriority49 \lsdlocked0 List Table 4;\lsdpriority50 \lsdlocked0 List Table 5 Dark;
+\lsdpriority51 \lsdlocked0 List Table 6 Colorful;\lsdpriority52 \lsdlocked0 List Table 7 Colorful;\lsdpriority46 \lsdlocked0 List Table 1 Light Accent 1;\lsdpriority47 \lsdlocked0 List Table 2 Accent 1;\lsdpriority48 \lsdlocked0 List Table 3 Accent 1;
+\lsdpriority49 \lsdlocked0 List Table 4 Accent 1;\lsdpriority50 \lsdlocked0 List Table 5 Dark Accent 1;\lsdpriority51 \lsdlocked0 List Table 6 Colorful Accent 1;\lsdpriority52 \lsdlocked0 List Table 7 Colorful Accent 1;
+\lsdpriority46 \lsdlocked0 List Table 1 Light Accent 2;\lsdpriority47 \lsdlocked0 List Table 2 Accent 2;\lsdpriority48 \lsdlocked0 List Table 3 Accent 2;\lsdpriority49 \lsdlocked0 List Table 4 Accent 2;
+\lsdpriority50 \lsdlocked0 List Table 5 Dark Accent 2;\lsdpriority51 \lsdlocked0 List Table 6 Colorful Accent 2;\lsdpriority52 \lsdlocked0 List Table 7 Colorful Accent 2;\lsdpriority46 \lsdlocked0 List Table 1 Light Accent 3;
+\lsdpriority47 \lsdlocked0 List Table 2 Accent 3;\lsdpriority48 \lsdlocked0 List Table 3 Accent 3;\lsdpriority49 \lsdlocked0 List Table 4 Accent 3;\lsdpriority50 \lsdlocked0 List Table 5 Dark Accent 3;
+\lsdpriority51 \lsdlocked0 List Table 6 Colorful Accent 3;\lsdpriority52 \lsdlocked0 List Table 7 Colorful Accent 3;\lsdpriority46 \lsdlocked0 List Table 1 Light Accent 4;\lsdpriority47 \lsdlocked0 List Table 2 Accent 4;
+\lsdpriority48 \lsdlocked0 List Table 3 Accent 4;\lsdpriority49 \lsdlocked0 List Table 4 Accent 4;\lsdpriority50 \lsdlocked0 List Table 5 Dark Accent 4;\lsdpriority51 \lsdlocked0 List Table 6 Colorful Accent 4;
+\lsdpriority52 \lsdlocked0 List Table 7 Colorful Accent 4;\lsdpriority46 \lsdlocked0 List Table 1 Light Accent 5;\lsdpriority47 \lsdlocked0 List Table 2 Accent 5;\lsdpriority48 \lsdlocked0 List Table 3 Accent 5;
+\lsdpriority49 \lsdlocked0 List Table 4 Accent 5;\lsdpriority50 \lsdlocked0 List Table 5 Dark Accent 5;\lsdpriority51 \lsdlocked0 List Table 6 Colorful Accent 5;\lsdpriority52 \lsdlocked0 List Table 7 Colorful Accent 5;
+\lsdpriority46 \lsdlocked0 List Table 1 Light Accent 6;\lsdpriority47 \lsdlocked0 List Table 2 Accent 6;\lsdpriority48 \lsdlocked0 List Table 3 Accent 6;\lsdpriority49 \lsdlocked0 List Table 4 Accent 6;
+\lsdpriority50 \lsdlocked0 List Table 5 Dark Accent 6;\lsdpriority51 \lsdlocked0 List Table 6 Colorful Accent 6;\lsdpriority52 \lsdlocked0 List Table 7 Colorful Accent 6;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Mention;
+\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Smart Hyperlink;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Hashtag;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Unresolved Mention;\lsdsemihidden1 \lsdunhideused1 \lsdlocked0 Smart Link;}}{\*\datastore 01050000
+02000000180000004d73786d6c322e534158584d4c5265616465722e362e3000000000000000000000060000
+d0cf11e0a1b11ae1000000000000000000000000000000003e000300feff090006000000000000000000000001000000010000000000000000100000feffffff00000000feffffff0000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffdfffffffeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffff52006f006f007400200045006e00740072007900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000016000500ffffffffffffffffffffffff0c6ad98892f1d411a65f0040963251e500000000000000000000000060f8
+983c7be7d601feffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ffffffffffffffffffffffff00000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ffffffffffffffffffffffff0000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ffffffffffffffffffffffff000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000105000000000000}}
