@@ -8,11 +8,11 @@ On ARCHER
  export DOMNAM=LBay180
  export EXPNUM=01
  export WORK=/work/n01/n01/$USER
- export WDIR=$WORK/DOMNAM
+ export WDIR=$WORK/$CONFIG
  export INPUTS=$WDIR/INPUTS
  export TEMPLATES=$INPUTS/TEMPLATES
- export CDIR=$WDIR/trunk_NEMOGCM_v4.0.2/cfgs
- export TDIR=$WDIR//trunk_NEMOGCM_v4.0.2/tools
+ export CDIR=$WDIR/trunk_NEMOGCM_v4.0.4/cfgs
+ export TDIR=$WDIR//trunk_NEMOGCM_v4.0.4/tools
  export EXP=$CDIR/$CONFIG/$DOMNAM\_$EXPNUM 
  export EXP=$CDIR/$CONFIG/$DOMNAM\_$EXPNUM
  export TMPLD=$CDIR/$CONFIG/GCOMS1k_templates
@@ -34,11 +34,11 @@ ln -s $INPUTS/$DOMNAM/metdta   metdta
 #ln -s  $INPUTS/$DOMNAM/$DOMNAM\_IC_v1_ORCA0083-N06_$STARTYEAR.nc initcd_vosaline.nc
 ln -s $INPUTS/$DOMNAM/bdydta/$DOMNAM\_coordinates.bdy.nc coordinates.bdy.nc
 ln -s $INPUTS/$DOMNAM/$DOMNAM\_domain_cfg.nc domain_cfg.nc 
-ln -s $INPUTS/$DOMNAM/$DOMNAM\_rivertest_v3.nc runoff.nc
+ln -s $INPUTS/$DOMNAM/$DOMNAM\_rivertest_v2.nc runoff.nc
 mkdir rst
 cp $TMPLD/*.xml .
-ln -s  $TMPLD/namelist_ref_v4.0.2 namelist_ref
-cat $TMPLD/namelist_cfg_domain_v4.0.2 | sed  "s,__STARTDATE__,$STARTYEAR,g"  | sed  "s,__DOMNAM__,$DOMNAM,g"   > namelist_cfg_template
+ln -s  $TMPLD/namelist_ref_v4.0.4 namelist_ref
+cat $TMPLD/namelist_cfg_domain_v4.0.4 | sed  "s,__STARTDATE__,$STARTYEAR,g"  | sed  "s,__DOMNAM__,$DOMNAM,g"   > namelist_cfg_template
 cp $TMPLD/monthlyrun*.pbd .
 cat $TMPLD/monthlyrun.pbs_template  | sed  "s,__DOMNAM__,$DOMNAM,g" > monthlyrun.pbs  
 cp $TMPLD/run_nemo.sh  .
@@ -89,7 +89,7 @@ export INPUTS=$WDIR/INPUTS
 export  OUTPUTS=/projectsa/accord/GCOMS1k/OUTPUTS/
 export INPUTS_ARCH=/work/n01/n01/$USER/$CONFIG/INPUTS/
 export CDIR_ARCH=/nerc/n01/n01/$USER/$CONFIG/OUTPUT/
-export EXP_ARCH=/work/n01/n01/jholt/GCOMS1k/trunk_NEMOGCM_v4.0.2/cfgs/$CONFIG/
+export EXP_ARCH=/work/n01/n01/jholt/GCOMS1k/trunk_NEMOGCM_v4.0.4/cfgs/$CONFIG/
 export EXPNUM=01
 export DOMNAM=LBay180
 
