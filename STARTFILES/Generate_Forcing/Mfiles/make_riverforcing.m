@@ -1,5 +1,5 @@
 
-rivfilename=[domain_path  '/' DOMNAM '/' DOMNAM '_rivertest_v2.nc'];
+rivfilename=[domain_path  '/' DOMNAM '/' DOMNAM '_rivertest_v3.nc'];
 check_delete(rivfilename);
 
 %%
@@ -7,7 +7,7 @@ check_delete(rivfilename);
 rho0=1000;
 nx=size(D,1);
 ny=size(D,2);
-mnth=1;
+mnth=0;
 rorunoff=zeros(nx,ny,12);  % value of dummy variable
  for i=1:length(i_r);
      if ~mnth

@@ -136,11 +136,12 @@ end
 %glamv  gphiv
 %glamf  gphif
 %%
+sc=nanmean([e1t(:) ; e2t(:)])/1000
 DD=D;
 DD(D==land_value)=NaN;
 figure
 pcolor(glamt,gphit,DD);shading flat;colorbar
-title([DOMNAM ' : Bathymetry']);
+title([DOMNAM ' : Bathymetry ', num2str(nx) ' x '  num2str(ny),' ', num2str(sc,2) ,'km' ]);
 
 %%
 make_nemo_V34_coords
