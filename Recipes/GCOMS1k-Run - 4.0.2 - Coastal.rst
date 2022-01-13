@@ -11,8 +11,8 @@ On ARCHER
  export WDIR=$WORK/$CONFIG
  export INPUTS=$WDIR/INPUTS
  export TEMPLATES=$INPUTS/TEMPLATES
- export CDIR=$WDIR/trunk_NEMOGCM_v4.0.4/cfgs
- export TDIR=$WDIR//trunk_NEMOGCM_v4.0.4/tools
+ export CDIR=$WDIR/trunk_NEMOGCM_v4.0.2/cfgs
+ export TDIR=$WDIR//trunk_NEMOGCM_v4.0.2/tools
  export EXP=$CDIR/$CONFIG/$DOMNAM\_$EXPNUM 
  export EXP=$CDIR/$CONFIG/$DOMNAM\_$EXPNUM
  export TMPLD=$CDIR/$CONFIG/GCOMS1k_templates
