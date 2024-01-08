@@ -1,0 +1,11 @@
+numpy
+xarray
+cartopy
+spyder
+jupyter
+matplotlib
+python
+scipy
+netCDF4
+#xesmf  # Optional. Not part of main package
+#esmpy
