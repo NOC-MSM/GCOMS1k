@@ -8,7 +8,9 @@ def sub_sample_2d(mesh,nn):
     mesh_new=np.zeros((ny_new,nx_new))
     for j in range(ny_new):
         for i in range(nx_new):
-            mm=mesh[j:j+nn,i:i+nn].ravel()
+            J=range(j*nn,(j+1)*nn)
+            I=range(i*nn,(i+1)*nn)
+            mm=mesh[J,I].ravel()
             mesh_new[j,i]=np.nanmean(mm)
     return mesh_new
 
@@ -21,13 +23,13 @@ def sub_sample_1d(vector,nn):
         vector_new[i]=np.nanmean(mm)
     return vector_new
 
-class gcoms1k:
-    def __init__(self,global_bathyname):
+
+class basin:
+    def __init__(self, global_bathyname,limits,resolution):
         self.global_bathyname=global_bathyname
+        self.limit=limits
+        self.resolution=resolution
         print(self.global_bathyname)
-
-
-    def basin(self,limits,resolution):
         print(limits)
         lat_min, lat_max, lon_min, lon_max = limits
         f = xr.open_dataset(self.global_bathyname)
@@ -36,15 +38,22 @@ class gcoms1k:
         imin = np.argmin((f.lon.values - lon_min) ** 2)
         imax = np.argmin((f.lon.values - lon_max) ** 2)
 
-        self.basin_bathy=f.isel(lat=range(jmin, jmax),lon=range(imin, imax))
-        bathymetry_raw = -np.ma.masked_where(self.basin_bathy.elevation>0,self.basin_bathy.elevation)
+        self.bathy_basin_raw=f.isel(lat=range(jmin, jmax),lon=range(imin, imax))
+        #bathy_basin_raw = -np.ma.masked_where(self.bathy_basin_raw.elevation>0,
+        #                                 self.bathy_basin_raw.elevation)
 
+        bathy_basin_raw = -self.bathy_basin_raw.elevation.values[:,:]
+        bathy_basin_raw[self.bathy_basin_raw.elevation>0] = np.nan
 
-        bathymetry=sub_sample_2d( bathymetry_raw,resolution)
-        print(bathymetry_raw.shape)
-        print(bathymetry.shape)
-        lat=sub_sample_1d(self.basin_bathy.lat.values[:],resolution)
-        lon=sub_sample_1d(self.basin_bathy.lon.values[:],resolution)
-        self.basin_bathy['bathymetry']=xr.DataArray(
-                bathymetry,
-                dims=["lat", "lon"])
+        bathy_basin=sub_sample_2d( bathy_basin_raw,resolution)
+        print(bathy_basin_raw.shape)
+        print(bathy_basin.shape)
+        lat_basin=sub_sample_1d(self.bathy_basin_raw.lat.values[:],resolution)
+        lon_basin=sub_sample_1d(self.bathy_basin_raw.lon.values[:],resolution)
+        self.dataset=xr.Dataset(coords=dict(
+                                        lat=("y_dim", lat_basin),
+                                        lon=("x_dim",lon_basin)
+                        ))
+        self.dataset['bathymetry']=xr.DataArray(
+                bathy_basin,
+                dims=["y_dim", "x_dim"])
