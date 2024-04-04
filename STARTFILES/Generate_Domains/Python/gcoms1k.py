@@ -23,6 +23,21 @@ def sub_sample_1d(vector,nn):
         vector_new[i]=np.nanmean(mm)
     return vector_new
 
+def rotate_on_sphere (lon,lat,lon_axis,lat_axis,rotation):
+
+#from https://stevedutch.net/mathalgo/sphere0.htm
+
+
+    c1 = np.cos(lat_axis) * np.cos(lon_axis) #x axis
+    c2 = np.cos(lat_axis) * np.sin(lon_axis) #y axis
+    c3 = np.sin(lat_axis)          #z axis
+
+    x' = x cos a + (1 - cos a)(c1c1x + c1c2y + c1c3z) + (c2z - c3y)sin a
+    y' = y cos a + (1 - cos a)(c2c1x + c2c2y + c2c3z) + (c3x - c1z)sin a
+    z' = z cos a + (1 - cos a)(c3c1x + c3c2y + c3c3z) + (c1y - c2x)sin a
+
+
+    lat_p = 
 
 class basin:
     def __init__(self, global_bathyname,limits,resolution):
@@ -57,3 +72,10 @@ class basin:
         self.dataset['bathymetry']=xr.DataArray(
                 bathy_basin,
                 dims=["y_dim", "x_dim"])
+
+    def classify (shelfbreak=200,)
+class domain:
+    def __init__(self, basin,limits,resolution):
+        self.limits = limits
+        self.resolution = resolution
+
