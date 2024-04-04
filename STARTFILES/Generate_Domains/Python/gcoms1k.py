@@ -23,21 +23,33 @@ def sub_sample_1d(vector,nn):
         vector_new[i]=np.nanmean(mm)
     return vector_new
 
-def rotate_on_sphere (lon,lat,lon_axis,lat_axis,rotation):
+def rotate_on_sphere (lat,lon,lat_axis,lon_axis,angle):
 
 #from https://stevedutch.net/mathalgo/sphere0.htm
 
+    pi180=np.pi/180
+    rlat_axis = lat_axis * pi180
+    rlon_axis = lon_axis * pi180
+    rlat = lat * pi180
+    rlon = lon * pi180
+    rangle = angle *pi180
+    c1 = np.cos(rlat_axis) * np.cos(rlon_axis) #x axis
+    c2 = np.cos(rlat_axis) * np.sin(rlon_axis) #y axis
+    c3 = np.sin(rlat_axis)          #z axis
 
-    c1 = np.cos(lat_axis) * np.cos(lon_axis) #x axis
-    c2 = np.cos(lat_axis) * np.sin(lon_axis) #y axis
-    c3 = np.sin(lat_axis)          #z axis
 
-    x' = x cos a + (1 - cos a)(c1c1x + c1c2y + c1c3z) + (c2z - c3y)sin a
-    y' = y cos a + (1 - cos a)(c2c1x + c2c2y + c2c3z) + (c3x - c1z)sin a
-    z' = z cos a + (1 - cos a)(c3c1x + c3c2y + c3c3z) + (c1y - c2x)sin a
+    x = np.cos(rlat) * np.cos(rlon)  # x point
+    y = np.cos(rlat) * np.sin(rlon)  # y point
+    z = np.sin(rlat)  # z point
 
-
-    lat_p = 
+    xp = x * np.cos(rangle) + (1. - np.cos(rangle)) * (c1 * c1 * x + c1 * c2* y + c1* c3 * z) + (c2 * z - c3 * y) * np.sin(rangle)
+    yp = y * np.cos(rangle) + (1. - np.cos(rangle)) * (c2 * c1 * x + c2 * c2 *y + c2 * c3* z) + (c3 * x - c1 * z) * np.sin(rangle)
+    zp = z * np.cos(rangle) + (1. - np.cos(rangle)) * (c3 * c1 * x + c3 * c2* y + c3 * c3* z) + (c1 * y - c2 * x) * np.sin(rangle)
+    print(x,y,z)
+    print(xp,yp,zp)
+    lat_p = np.arcsin(zp)
+    lon_p = np.arcsin(yp/np.cos(lat_p))
+    return lat_p/pi180,lon_p/pi180
 
 class basin:
     def __init__(self, global_bathyname,limits,resolution):
@@ -73,7 +85,7 @@ class basin:
                 bathy_basin,
                 dims=["y_dim", "x_dim"])
 
-    def classify (shelfbreak=200,)
+    #def classify (shelfbreak=200,)
 class domain:
     def __init__(self, basin,limits,resolution):
         self.limits = limits
