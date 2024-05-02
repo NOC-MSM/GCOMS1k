@@ -85,7 +85,23 @@ class basin:
                 bathy_basin,
                 dims=["y_dim", "x_dim"])
 
-    #def classify (shelfbreak=200,)
+    def classify (self,shelfbreak=200,ocean_margin_distance=100):
+        bathy=self.dataset['bathymetry'].values
+        classification=np.zeros(bathy.shape)
+
+        classification[bathy<shelfbreak]=2
+        classification[np.isnan(bathy)]=1
+        #find shelf break
+        shelf_break=np.full(bathy.shape,False)
+        shelf_break[1:-1,1:-1]=(
+            classification[1:-1,1:-1] == 2 * (
+            (classification[0:-2,1:-1]==0) +
+            (classification[2:, 1:-1] == 0) +
+            (classification[1:-1,0:-2] == 0) +
+             (classification[1:-1,2:] == 0)
+        ))
+        classification[shelf_break] = 3
+        self.dataset['classification']=xr.DataArray(classification,dims=["y_dim","x_dim"])
 class domain:
     def __init__(self, basin,limits,resolution):
         self.limits = limits
