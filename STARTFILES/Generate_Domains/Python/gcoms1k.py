@@ -51,6 +51,52 @@ def rotate_on_sphere (lat,lon,lat_axis,lon_axis,angle):
     lon_p = np.arcsin(yp/np.cos(lat_p))
     return lat_p/pi180,lon_p/pi180
 
+def nearest_lists(x,y,xp,yp):
+    n_nn=1
+    import scipy.spatial as sp
+    XY = np.dstack([y, x])[0]
+    XYp = np.dstack([yp, xp])[0]
+    mytree = sp.cKDTree(XY)
+    dist, indx = mytree.query(XYp, n_nn)
+    #I = np.nonzero(np.isnan(lon))
+    #indx[I] = 0
+    return [indx, dist]
+
+def calculate_haversine_distance(lon1, lat1, lon2, lat2):
+    """
+    Estimation of geographical distance using the Haversine function.
+
+    Input can be single values or 1D arrays of locations. This does NOT create a
+        distance matrix but outputs another 1D array.
+    This works for either location vectors of equal length OR a single location
+        and an arbitrary length location vector.
+
+    Args:
+        lon1 (Any): Angles in degrees.
+        lat1 (Any): Angles in degrees.
+        lon2 (Any): Angles in degrees.
+        lat2 (Any): Angles in degrees.
+
+    Returns:
+        float: Haversine distance between points.
+    """
+
+    # Convert to radians for calculations
+    lon1 = np.deg2rad(lon1)
+    lat1 = np.deg2rad(lat1)
+    lon2 = np.deg2rad(lon2)
+    lat2 = np.deg2rad(lat2)
+
+    # Latitude and longitude differences
+    dlat = (lat2 - lat1) / 2
+    dlon = (lon2 - lon1) / 2
+
+    # Haversine function.
+    distance = np.sin(dlat) ** 2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon) ** 2
+    distance = 2 * 6371.007176 * np.arcsin(np.sqrt(distance))
+
+    return distance
+
 class basin:
     def __init__(self, global_bathyname,limits,resolution):
         self.global_bathyname=global_bathyname
@@ -101,6 +147,20 @@ class basin:
              (classification[1:-1,2:] == 0)
         ))
         classification[shelf_break] = 3
+        #find the closest shelf_break point to each ocean point
+        J_ocean,I_ocean=np.where(classification==0)
+        Y_ocean = self.dataset['lat'].values[J_ocean]
+        X_ocean = self.dataset['lon'].values[I_ocean]
+
+        J_shelf_break,I_shelf_break=np.where(classification==3)
+        Y_shelf_break = self.dataset['lat'].values[J_shelf_break]
+        X_shelf_break = self.dataset['lon'].values[I_shelf_break]
+
+        I, dist = nearest_lists(Y_shelf_break, X_shelf_break, Y_ocean, X_ocean)
+        #find distance between each ocean point and its nearest shelf break point
+        distance=calculate_haversine_distance(X_ocean, Y_ocean, X_shelf_break[I], Y_shelf_break[I])
+        I_margin=np.where(distance<ocean_margin_distance)
+        classification[J_ocean[I_margin],I_ocean[I_margin]]=4
         self.dataset['classification']=xr.DataArray(classification,dims=["y_dim","x_dim"])
 class domain:
     def __init__(self, basin,limits,resolution):

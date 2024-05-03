@@ -8,6 +8,6 @@ limits=[40,65,-20,12]
 a=gcoms1k.basin(bathyname,limits,10)
 plt.pcolormesh(a.dataset.bathymetry[:,:])
 plt.show()
-a.classify()
+a.classify(shelfbreak=200,ocean_margin_distance=50)
 plt.pcolormesh(a.dataset.classification[:,:])
 plt.show()
