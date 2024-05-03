@@ -19,7 +19,8 @@ def sub_sample_1d(vector,nn):
     nx_new=np.floor(nx/nn).astype('int')
     vector_new=np.zeros((nx_new))
     for i in range(nx_new):
-        mm=vector[i:i+nn].ravel()
+        I = range(i * nn, (i + 1) * nn)
+        mm=vector[I].ravel()
         vector_new[i]=np.nanmean(mm)
     return vector_new
 
